@@ -4,8 +4,10 @@
     "builtin-baseline": "43235cf746cddb4981a8ef4abdb80aafe4d4e0e2",
     "dependencies": [
         {
-            "name": "gtest",
-            "version>=": "1.11.0"
+        
+        
+            "name": "qt5-base",
+            "version>=": "5.15.6"
         }
     ]
 }
