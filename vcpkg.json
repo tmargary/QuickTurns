@@ -6,6 +6,10 @@
         {
             "name": "gtest",
             "version>=": "1.11.0"
+        },
+        {
+        "name": "qt5-base",
+        "version>=": "5.15.6"
         }
     ]
 }

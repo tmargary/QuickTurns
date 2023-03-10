@@ -24,7 +24,15 @@ set(PROJECT_SOURCES
 )
 
 add_executable(QuickTurns ${PROJECT_SOURCES})
+find_package(Qt5 COMPONENTS Core)
+find_package(Qt5 COMPONENTS Gui)
+find_package(Qt5 COMPONENTS Widgets)
 
+target_link_libraries(QuickTurns PUBLIC
+    Qt::Core
+    Qt::Gui
+    Qt::Widgets
+)
 target_link_libraries(QuickTurns PRIVATE Qt${QT_VERSION_MAJOR}::Widgets)
 
 set_target_properties(QuickTurns PROPERTIES
@@ -39,8 +47,8 @@ install(TARGETS QuickTurns
     BUNDLE DESTINATION .
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR})
 
-find_package(GTest REQUIRED)
-target_link_libraries(QuickTurns PRIVATE GTest::GTest GTest::Main)
+#find_package(GTest REQUIRED)
+#target_link_libraries(QuickTurns PRIVATE GTest::GTest GTest::Main)
 
 
 if(QT_VERSION_MAJOR EQUAL 6)
