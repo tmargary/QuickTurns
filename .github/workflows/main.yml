@@ -1,0 +1,56 @@
+name: build
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  # Allows to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  build-tests:
+    name: Build on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest] # windows and macos need workaround for Qt installation
+        include:
+          #- os: windows-latest
+          #  triplet: x64-windows-release
+          #  build-type: Release
+          - os: ubuntu-latest
+            triplet: x64-linux-release
+            build-type: Release
+          #- os: macos-latest
+          #  triplet: x64-osx
+          #  build-type: Release
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          submodules: recursive
+          fetch-depth: 0
+
+      - name: Install Qt development tools
+        run: sudo apt install build-essential qtbase5-dev qtchooser qt5-qmake qtbase5-dev-tools
+        if: matrix.os == 'ubuntu-latest'
+
+      - name: Restore artifacts, or setup vcpkg for building artifacts
+        uses: lukka/run-vcpkg@v10
+        with:
+          vcpkgDirectory: "${{ github.workspace }}/external/vcpkg"
+
+      - name: Configure CMake
+        run: |
+          cmake -S . -B make -DCMAKE_BUILD_TYPE=${{ matrix.build-type }}
+      - name: Build
+        working-directory: ./make
+        run: |
+          cmake --build . --config ${{ matrix.build-type }} --parallel $(nproc)
