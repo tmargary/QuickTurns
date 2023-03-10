@@ -18,8 +18,7 @@ Install the QT development tools using your distribution's package manager.
 - Ubuntu
     ```
     sudo apt-get update
-    sudo apt-get install build-essential
-    sudo apt-get install qt5-default
+    sudo apt-get install build-essential qt5-qmake qtbase5-dev
     ```
 - Fedora
     ```
