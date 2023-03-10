@@ -53,7 +53,7 @@ Install the QT development tools using your distribution's package manager.
 4. `cmake --build ./build`
 
 ## Built With
-[Qt](https://www.qt.io/) - The application framework used
+[Qt](https://www.qt.io/) - The application framework used</br>
 [C++](https://en.wikipedia.org/wiki/C%2B%2B) - The programming language used
 
 ## License
