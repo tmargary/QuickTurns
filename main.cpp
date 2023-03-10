@@ -1,9 +1,9 @@
 
 #include <QApplication>
 #include <QHBoxLayout>
-#include <QVBoxLayout>
 #include <QSlider>
 #include <QSpinBox>
+#include <QVBoxLayout>
 
 int main(int argc, char *argv[])
 {
@@ -28,5 +28,5 @@ int main(int argc, char *argv[])
 
     window->show();
 
-    return app.exec();
+    return QApplication::exec();
 }
