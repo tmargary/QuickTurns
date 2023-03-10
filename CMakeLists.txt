@@ -8,7 +8,13 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-set(VCPKG_TOOLCHAIN "${CMAKE_CURRENT_SOURCE_DIR}/external/vcpkg/scripts/buildsystems/vcpkg.cmake" CACHE STRING "")
+# Set the path to the vspkg.json file
+set(VSPKG_JSON_PATH "${CMAKE_SOURCE_DIR}/vcpkg.json")
+
+# Include the vcpkg toolchain file
+if(EXISTS "${VSPKG_JSON_PATH}")
+    include("${CMAKE_SOURCE_DIR}/external/vcpkg/scripts/buildsystems/vcpkg.cmake")
+endif()
 
 find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets)
