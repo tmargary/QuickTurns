@@ -46,7 +46,7 @@ Install the QT development tools using your distribution's package manager.
     ```
 
 ## Installation
-- `git clone --recurse-submodules https://github.com/tmargary/QuickTurns`
+- `git clone --recurse-submodules git@github.com:tmargary/QuickTurns.git`
 - `cd QuickTurns`
 - `mkdir build && cd build`
 - `cmake ..`
