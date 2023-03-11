@@ -13,7 +13,7 @@ set(VSPKG_JSON_PATH "${CMAKE_SOURCE_DIR}/vcpkg.json")
 
 # Include the vcpkg toolchain file
 if(EXISTS "${VSPKG_JSON_PATH}")
-    include("${CMAKE_SOURCE_DIR}/external/vcpkg/scripts/buildsystems/vcpkg.cmake")
+    include("/home/nina/vcpkg/scripts/buildsystems/vcpkg.cmake")
 endif()
 
 find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets)
@@ -29,6 +29,7 @@ endif()
 
 set(PROJECT_SOURCES
         main.cpp
+        QuickTurns.cpp
 )
 
 add_executable(QuickTurns ${PROJECT_SOURCES})
