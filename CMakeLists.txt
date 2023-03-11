@@ -49,7 +49,3 @@ install(TARGETS QuickTurns
 
 find_package(GTest REQUIRED)
 target_link_libraries(QuickTurns PRIVATE GTest::GTest GTest::Main)
-
-if(QT_VERSION_MAJOR EQUAL 6)
-    qt_finalize_executable(QuickTurns)
-endif()
