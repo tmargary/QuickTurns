@@ -39,7 +39,7 @@ jobs:
           fetch-depth: 0
 
       - name: Install Qt development tools
-        run: sudo apt install build-essential qtbase5-dev qtchooser qt5-qmake qtbase5-dev-tools
+        run: sudo apt install build-essential qtbase5-dev qtchooser qt5-qmake qtbase5-dev-tools clang-tidy
         if: matrix.os == 'ubuntu-latest'
 
       - name: Restore artifacts, or setup vcpkg for building artifacts

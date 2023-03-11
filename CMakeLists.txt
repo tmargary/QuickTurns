@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.16)
 
 project(QuickTurns VERSION 0.1 LANGUAGES CXX)
 
@@ -18,6 +18,14 @@ endif()
 
 find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets)
+
+find_program(CMAKE_CXX_CLANG_TIDY_EXECUTABLE NAMES clang-tidy)
+if (NOT CMAKE_CXX_CLANG_TIDY_EXECUTABLE)
+  message("clang-tidy not found")
+else()
+  message("clang-tidy found")
+  set(CMAKE_CXX_CLANG_TIDY ${CMAKE_CXX_CLANG_TIDY_EXECUTABLE})
+endif()
 
 set(PROJECT_SOURCES
         main.cpp
@@ -41,7 +49,6 @@ install(TARGETS QuickTurns
 
 find_package(GTest REQUIRED)
 target_link_libraries(QuickTurns PRIVATE GTest::GTest GTest::Main)
-
 
 if(QT_VERSION_MAJOR EQUAL 6)
     qt_finalize_executable(QuickTurns)

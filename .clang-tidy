@@ -1,5 +1,4 @@
 Checks: >
-  HeaderFilterRegex: 'src/.*'
   bugprone-assert-side-effect,
   bugprone-assignment-in-if-condition,
   bugprone-bad-signal-to-kill-thread,
@@ -79,4 +78,4 @@ Checks: >
 #  cppcoreguidelines-owning-memory, Qt's parent child memory management results in false positives
 
 # Turn all the warnings from the checks above into errors.
-# WarningsAsErrors: "*"
+WarningsAsErrors: "*"
