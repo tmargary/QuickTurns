@@ -29,6 +29,8 @@ endif()
 
 set(PROJECT_SOURCES
         main.cpp
+        QuickTurns.cpp
+        ReaderView.cpp
 )
 
 add_executable(QuickTurns ${PROJECT_SOURCES})
