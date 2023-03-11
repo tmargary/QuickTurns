@@ -7,7 +7,7 @@ int main(int argc, char *argv[])
 {
     //
     QApplication app(argc, argv);
-    QuickTurns qt;
-    qt.show();
+    QuickTurns mainView;
+    mainView.show();
     return QApplication::exec();
 }

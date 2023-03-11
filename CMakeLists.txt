@@ -13,7 +13,7 @@ set(VSPKG_JSON_PATH "${CMAKE_SOURCE_DIR}/vcpkg.json")
 
 # Include the vcpkg toolchain file
 if(EXISTS "${VSPKG_JSON_PATH}")
-    include("/home/nina/vcpkg/scripts/buildsystems/vcpkg.cmake")
+    include("${CMAKE_SOURCE_DIR}/external/vcpkg/scripts/buildsystems/vcpkg.cmake")
 endif()
 
 find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets)
@@ -50,7 +50,3 @@ install(TARGETS QuickTurns
 
 find_package(GTest REQUIRED)
 target_link_libraries(QuickTurns PRIVATE GTest::GTest GTest::Main)
-
-if(QT_VERSION_MAJOR EQUAL 6)
-    qt_finalize_executable(QuickTurns)
-endif()
