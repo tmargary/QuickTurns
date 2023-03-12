@@ -1,0 +1,23 @@
+set(PROJECT_SOURCES
+        main.cpp
+)
+
+find_package(Qt5 COMPONENTS Widgets)
+
+add_executable(QuickTurns ${PROJECT_SOURCES})
+
+target_link_libraries(QuickTurns PRIVATE 
+    Qt::Widgets
+)
+
+set_target_properties(QuickTurns PROPERTIES
+    MACOSX_BUNDLE_GUI_IDENTIFIER my.example.com
+    MACOSX_BUNDLE_BUNDLE_VERSION ${PROJECT_VERSION}
+    MACOSX_BUNDLE_SHORT_VERSION_STRING ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}
+    MACOSX_BUNDLE TRUE
+    WIN32_EXECUTABLE TRUE
+)
+
+install(TARGETS QuickTurns
+    BUNDLE DESTINATION .
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR})
