@@ -1,12 +1,19 @@
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTORCC ON)
+
 set(PROJECT_SOURCES
         main.cpp
 )
 
+find_package(Qt5 COMPONENTS Core)
+find_package(Qt5 COMPONENTS Gui)
 find_package(Qt5 COMPONENTS Widgets)
 
 add_executable(QuickTurns ${PROJECT_SOURCES})
 
-target_link_libraries(QuickTurns PRIVATE 
+target_link_libraries(QuickTurns PRIVATE
+    Qt::Core
+    Qt::Gui
     Qt::Widgets
 )
 
