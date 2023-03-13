@@ -1,5 +1,4 @@
-#ifndef QUICKTURNS_H
-#define QUICKTURNS_H
+#pragma once
 
 #include <QWidget>
 #include <QPushButton>
@@ -11,5 +10,3 @@ public:
 private:
     QPushButton* button/*("Open File Explorer", nullptr)*/;
 };
-
-#endif

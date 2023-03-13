@@ -1,5 +1,6 @@
 add_subdirectory(MainView)
 add_subdirectory(ReaderView)
+add_subdirectory(EpubReader)
 
 add_executable(QuickTurns main.cpp)
 
