@@ -49,6 +49,7 @@ jobs:
         uses: lukka/run-vcpkg@v10
         with:
           vcpkgDirectory: "${{ github.workspace }}/external/vcpkg"
+          vcpkgJsonGlob: '**/vcpkg.json'
 
       - name: Configure CMake
         run: |
@@ -62,3 +63,9 @@ jobs:
         working-directory: ./make
         run: |
           ctest -j$(nproc) --build-config ${{ matrix.build-type }}
+
+      # Cache only if job passed
+      - run: |
+         echo "RUNVCPKG_NO_CACHE=1" >> $GITHUB_ENV
+        if: ${{ failure() || cancelled() }}
+        shell: bash
