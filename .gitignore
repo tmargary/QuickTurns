@@ -34,3 +34,6 @@
 *.user
 /build
 /.vscode
+/.cache
+src/EpubReaderDummy/.vscode
+src/EpubReaderDummy/build
