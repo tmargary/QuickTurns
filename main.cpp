@@ -11,8 +11,5 @@ int main(int argc, char *argv[])
     QuickTurns mainView;
     mainView.show();
 
-    ReaderView window;
-    window.show();
-
     return QApplication::exec();
 }
