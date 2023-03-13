@@ -1,8 +1,9 @@
-#include "QuickTurns.h"
 #include <QHBoxLayout>
-#include "ReaderView.h"
 
-QuickTurns::QuickTurns(QWidget* parent): QWidget(parent) {
+#include "MainView/MainView.h"
+#include "ReaderView/ReaderView.h"
+
+MainView::MainView(QWidget* parent): QWidget(parent) {
     QHBoxLayout *layout = new QHBoxLayout(parent);
     this->setLayout(layout);
     button = new QPushButton("Button");
