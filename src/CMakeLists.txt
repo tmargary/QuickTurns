@@ -1,11 +1,12 @@
 add_subdirectory(MainView)
 add_subdirectory(ReaderView)
-add_subdirectory(EpubReader)
+add_subdirectory(ArchiveExtractor)
+add_subdirectory(Util)
 
 add_executable(QuickTurns main.cpp)
 
 find_package(Qt5 COMPONENTS Widgets)
-target_link_libraries(QuickTurns PRIVATE ReaderView MainView Qt::Widgets)
+target_link_libraries(QuickTurns PRIVATE ReaderView MainView ArchiveExtractor Qt::Widgets)
 
 set_target_properties(QuickTurns PROPERTIES
     MACOSX_BUNDLE_GUI_IDENTIFIER my.example.com
