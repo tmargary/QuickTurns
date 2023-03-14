@@ -1,4 +1,5 @@
 Checks: >
+  HeaderFilterRegex: 'src/.*'
   bugprone-assert-side-effect,
   bugprone-assignment-in-if-condition,
   bugprone-bad-signal-to-kill-thread,

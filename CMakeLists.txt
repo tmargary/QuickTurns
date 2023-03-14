@@ -24,5 +24,6 @@ else()
   set(CMAKE_CXX_CLANG_TIDY ${CMAKE_CXX_CLANG_TIDY_EXECUTABLE})
 endif()
 
+enable_testing()
 add_subdirectory(src)
 add_subdirectory(test)

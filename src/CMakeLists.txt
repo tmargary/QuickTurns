@@ -1,13 +1,19 @@
-set(PROJECT_SOURCES
-        main.cpp
-)
+add_subdirectory(MainView)
+add_subdirectory(ReaderView)
+add_subdirectory(ArchiveExtractor)
+add_subdirectory(Util)
+
+add_executable(QuickTurns main.cpp)
 
 find_package(Qt5 COMPONENTS Widgets)
 
-add_executable(QuickTurns ${PROJECT_SOURCES})
-
-target_link_libraries(QuickTurns PRIVATE 
+target_link_libraries(QuickTurns PRIVATE
+    Qt::Core
+    Qt::Gui
     Qt::Widgets
+    ReaderView
+    MainView
+    ArchiveExtractor
 )
 
 set_target_properties(QuickTurns PROPERTIES
