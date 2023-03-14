@@ -3,6 +3,7 @@ set(TEST_SOURCES
 )
 
 find_package(GTest REQUIRED)
+include(GoogleTest)
 #find_package(QuickTurnsLib REQUIRED)
 
 add_executable(QuickTurnsTest ${TEST_SOURCES})
@@ -12,3 +13,5 @@ target_link_libraries(QuickTurnsTest PRIVATE
   ArchiveExtractor
   Util
 )
+
+gtest_discover_tests(QuickTurnsTest)
