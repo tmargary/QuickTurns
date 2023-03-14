@@ -9,5 +9,6 @@ add_executable(QuickTurnsTest ${TEST_SOURCES})
 
 target_link_libraries(QuickTurnsTest PRIVATE 
   GTest::GTest
-  # QuickTurnsLib
+  ArchiveExtractor
+  Util
 )
