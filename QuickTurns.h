@@ -1,8 +1,6 @@
 #pragma once
 
 #include <QWidget>
-#include <QPushButton>
-#include <QFileDialog>
 
 class QuickTurns : public QWidget{
 public:

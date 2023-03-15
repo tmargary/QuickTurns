@@ -20,7 +20,6 @@ void EpubExtractor::writeEntry(const std::string &outputFilename, const std::str
     boost::filesystem::create_directories(outputPath.parent_path());
     std::ofstream outputFile(outputFilename);
     outputFile << textData;
-    outputFile.close();
 }
 
 void EpubExtractor::extract(const std::string &source, const std::string &destinationDir)
