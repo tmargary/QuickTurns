@@ -1,8 +1,5 @@
-#include "libzippp.h"
 #include <boost/filesystem.hpp>
 #include <fstream>
-#include <iostream>
-#include <memory>
 #include <string>
 #include <vector>
 
@@ -29,10 +26,9 @@ void EpubExtractor::writeEntry(const std::string &outputFilename, const std::str
 void EpubExtractor::extract(const std::string &source, const std::string &destinationDir)
 {
     std::vector<ZipEntry> entries = readEntries(source);
-    std::vector<ZipEntry>::iterator ittr;
-    for (ittr = entries.begin(); ittr != entries.end(); ++ittr)
+    for (const auto &entry : entries)
     {
-        ZipEntry entry = *ittr;
+        // ZipEntry entry = *ittr;
         std::string name = entry.getName();
         std::string textData = entry.readAsText();
         std::string outputFilename = destinationDir + name;

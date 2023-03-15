@@ -2,7 +2,7 @@ set(PROJECT_SOURCES
         main.cpp
 )
 
-find_package(Qt5 COMPONENTS Widgets)
+find_package(Qt5 COMPONENTS Core Gui Widgets)
 
 add_executable(QuickTurns ${PROJECT_SOURCES})
 
