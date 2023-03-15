@@ -2,15 +2,8 @@
 #include "Util/Util.h"
 #include <gtest/gtest.h>
 
-std::string get_test_data_dir(){
-    const boost::filesystem::path source_file(__FILE__);
-    const std::string test_dir = source_file.parent_path().string();
-    return test_dir + "/../build/test/data";
-}
-
 TEST(ArchiveExtractorTest, TestEpubExtractor) {
-
-    const std::string test_data_dir = get_test_data_dir();
+    const std::string test_data_dir = boost::filesystem::current_path().string() + "/data";
     const std::string src = test_data_dir + "/sample.epub";
     const std::string dst = test_data_dir + "/extracted/";
     const std::string entryFile = test_data_dir + "/extracted/mimetype";
