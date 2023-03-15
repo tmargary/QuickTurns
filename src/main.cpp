@@ -1,13 +1,14 @@
 #include <QApplication>
 #include <QWidget>
 
+#include "MainView/MainView.h"
+#include "ReaderView/ReaderView.h"
+
 int main(int argc, char *argv[])
 {
     QApplication app(argc, argv);
-
-    QWidget window;
-    window.setWindowTitle("Enter Your Age");
-    window.show();
+    MainView mainView;
+    mainView.show();
 
     return QApplication::exec();
 }
