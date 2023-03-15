@@ -5,7 +5,7 @@ add_subdirectory(Util)
 
 add_executable(QuickTurns main.cpp)
 
-find_package(Qt5 COMPONENTS Widgets)
+find_package(Qt5 COMPONENTS Core Gui Widgets)
 
 target_link_libraries(QuickTurns PRIVATE
     Qt::Core

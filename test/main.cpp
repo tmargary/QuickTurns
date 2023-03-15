@@ -1,7 +1,6 @@
 #include "ArchiveExtractor/ArchiveExtractor.h"
 #include "Util/Util.h"
 #include <gtest/gtest.h>
-#include <iostream>
 
 TEST(ArchiveExtractorTest, TestEpubExtractor) {
     // get the project root and other paths

@@ -13,9 +13,7 @@ class ArchiveExtractor
     virtual std::vector<ZipEntry> readEntries(const std::string &source) = 0;
     virtual void writeEntry(const std::string &outputFilename, const std::string &textData) = 0;
     virtual void extract(const std::string &source, const std::string &destinationDir) = 0;
-    virtual ~ArchiveExtractor()
-    {
-    }
+    virtual ~ArchiveExtractor() = default;
 };
 
 class EpubExtractor : public ArchiveExtractor

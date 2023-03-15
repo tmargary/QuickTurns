@@ -1,4 +1,5 @@
 #include "ReaderView/ReaderView.h"
+#include <QtWidgets>
 
 ReaderView::ReaderView(QWidget *parent) : QWidget(parent) {
     // Create the top part of the window
