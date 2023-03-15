@@ -8,5 +8,5 @@ class QuickTurns : public QWidget{
 public:
      QuickTurns(QWidget* parent = nullptr);
 private:
-    QPushButton* button/*("Open File Explorer", nullptr)*/;
+    QPushButton* button{nullptr};
 };
