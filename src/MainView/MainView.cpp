@@ -1,3 +1,5 @@
+#include <QPushButton>
+#include <QFileDialog>
 #include <QHBoxLayout>
 
 #include "MainView/MainView.h"
