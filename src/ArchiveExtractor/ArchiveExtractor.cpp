@@ -37,7 +37,7 @@ void EpubExtractor::extract(const std::string &source, const std::string &destin
 
 std::unique_ptr<ArchiveExtractor> createExtractor(const std::string &source, const std::string &destinationDir)
 {
-    std::string extension = boost::filesystem::extension(source);
+    std::string extension = boost::filesystem::path(source).extension().string();
     if (extension == ".epub")
     {
         return std::make_unique<EpubExtractor>(source, destinationDir);

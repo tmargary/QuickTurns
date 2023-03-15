@@ -1,6 +1,4 @@
-set(TEST_SOURCES
-        main.cpp
-)
+set(TEST_SOURCES main.cpp)
 
 find_package(GTest REQUIRED)
 include(GoogleTest)
