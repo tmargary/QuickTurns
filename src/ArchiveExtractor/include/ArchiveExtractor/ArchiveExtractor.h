@@ -26,7 +26,7 @@ class EpubExtractor : public ArchiveExtractor
 
     std::vector<ZipEntry> readEntries(const std::string &source) override;
     void writeEntry(const std::string &outputFilename, const std::string &textData) override;
-    void extract(const std::string &source, const std::string &destinationDir);
+    void extract(const std::string &source, const std::string &destinationDir) override;
 
   private:
     const std::string source;
