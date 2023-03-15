@@ -1,4 +1,5 @@
 
+#include <fstream>
 #include <boost/filesystem.hpp>
 
 std::string get_project_root_dir() {
