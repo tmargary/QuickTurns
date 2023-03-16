@@ -1,14 +1,72 @@
-
-#include <boost/filesystem.hpp>
+#include <array>
+#include <filesystem>
 #include <fstream>
+#include <iostream>
+#include <openssl/evp.h>
+#include <sstream>
+#include <string>
+#include <vector>
 
-std::string read_file_contents(const std::string &file_path)
+namespace fs = std::filesystem;
+constexpr size_t SHA256_DIGEST_LENGTH = 32;
+
+std::string sha256(const std::string &data)
 {
-    std::ifstream file(file_path);
-    if (!file.is_open())
+    std::array<unsigned char, SHA256_DIGEST_LENGTH> hash{};
+    EVP_MD_CTX *ctx = EVP_MD_CTX_new();
+    EVP_DigestInit_ex(ctx, EVP_sha256(), nullptr);
+    EVP_DigestUpdate(ctx, data.c_str(), data.length());
+    unsigned int digest_len{};
+    EVP_DigestFinal_ex(ctx, hash.data(), &digest_len);
+    EVP_MD_CTX_free(ctx);
+
+    std::stringstream sstream;
+    for (const auto &byte : hash)
     {
-        throw std::runtime_error("Could not open file: " + file_path);
+        sstream << std::hex << std::setw(2) << std::setfill('0') << static_cast<int>(byte);
     }
-    std::string contents((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
-    return contents;
+
+    return sstream.str();
+}
+
+std::string readFile(const fs::path &path)
+{
+    std::ifstream file(path, std::ios::binary);
+    std::stringstream buffer;
+    buffer << file.rdbuf();
+    return buffer.str();
+}
+
+std::string generateChecksumForFolder(const fs::path &folder)
+{
+    std::vector<std::string> fileHashes;
+
+    for (const auto &entry : fs::directory_iterator(folder))
+    {
+        if (entry.is_regular_file())
+        {
+            std::string fileContent = readFile(entry.path());
+            std::string fileHash = sha256(fileContent);
+            fileHashes.push_back(fileHash);
+        }
+    }
+
+    std::string combinedHashes;
+    for (const auto &hash : fileHashes)
+    {
+        combinedHashes += hash;
+    }
+
+    return sha256(combinedHashes);
+}
+
+std::string generateChecksumForFile(const fs::path &file)
+{
+    if (!fs::is_regular_file(file))
+    {
+        throw std::runtime_error("Invalid file path");
+    }
+
+    std::string fileContent = readFile(file);
+    return sha256(fileContent);
 }

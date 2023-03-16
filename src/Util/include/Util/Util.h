@@ -1,4 +1,7 @@
 #include <string>
+#include <filesystem>
 
-std::string get_project_root_dir();
-std::string read_file_contents(const std::string& file_path);
+namespace fs = std::filesystem;
+
+std::string generateChecksumForFile(const fs::path &file);
+std::string generateChecksumForFolder(const fs::path &folder);
