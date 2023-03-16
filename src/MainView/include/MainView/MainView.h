@@ -3,9 +3,9 @@
 #include <QWidget>
 #include <QPushButton>
 
-class QuickTurns : public QWidget{
+class MainView : public QWidget{
 public:
-     QuickTurns(QWidget* parent = nullptr);
+     MainView(QWidget* parent = nullptr);
 private:
     QPushButton* button{nullptr};
 };
