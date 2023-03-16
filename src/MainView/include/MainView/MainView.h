@@ -1,11 +1,15 @@
 #pragma once
 
-#include <QWidget>
+#include <QHBoxLayout>
 #include <QPushButton>
+#include <QWidget>
 
-class MainView : public QWidget{
-public:
-     MainView(QWidget* parent = nullptr);
-private:
-    QPushButton* button{nullptr};
+class MainView : public QWidget
+{
+  public:
+    MainView(QWidget *parent = nullptr);
+
+  private:
+    void addButton(QHBoxLayout *);
+    QPushButton *button{nullptr};
 };
