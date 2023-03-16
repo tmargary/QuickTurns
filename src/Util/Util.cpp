@@ -5,6 +5,7 @@
 #include <openssl/evp.h>
 #include <sstream>
 #include <string>
+#include <algorithm>
 #include <vector>
 
 namespace fs = std::filesystem;
@@ -50,6 +51,8 @@ std::string generateChecksumForFolder(const fs::path &folder)
             fileHashes.push_back(fileHash);
         }
     }
+
+    std::sort(fileHashes.begin(), fileHashes.end());
 
     std::string combinedHashes;
     for (const auto &hash : fileHashes)
