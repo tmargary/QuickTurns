@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <array>
 #include <filesystem>
 #include <fstream>
@@ -5,7 +6,6 @@
 #include <openssl/evp.h>
 #include <sstream>
 #include <string>
-#include <algorithm>
 #include <vector>
 
 namespace fs = std::filesystem;
@@ -30,12 +30,29 @@ std::string sha256(const std::string &data)
     return sstream.str();
 }
 
+std::string normalizeLineEndings(const std::string &data)
+{
+    std::string normalized;
+    normalized.reserve(data.size());
+
+    for (const auto &symbol : data)
+    {
+        if (symbol != '\r')
+        {
+            normalized.push_back(symbol);
+        }
+    }
+
+    return normalized;
+}
+
 std::string readFile(const fs::path &path)
 {
     std::ifstream file(path, std::ios::binary);
     std::stringstream buffer;
     buffer << file.rdbuf();
-    return buffer.str();
+    std::string content = buffer.str();
+    return normalizeLineEndings(content);
 }
 
 std::string generateChecksumForFolder(const fs::path &folder)

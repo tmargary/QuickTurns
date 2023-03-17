@@ -5,7 +5,7 @@
 using namespace std;
 
 TEST(ArchiveExtractorTest, TestEpubExtractorFolderCheckSum) {
-    const std::string checksum_expected = "722ae977068910e8bb5c18b43d6da75a7d759aef8997faae594b9c61735e84ee";
+    const std::string checksum_expected = "297a23c9b57686e3dca5c0244d1c994521ede2cea2945145faea15d85a47f662";
     const std::string test_dir(boost::filesystem::path(__FILE__).parent_path().string());
     const std::string test_data_dir = test_dir + "/data";
     const std::string src = test_data_dir + "/sample.epub";
