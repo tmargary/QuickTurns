@@ -1,17 +1,6 @@
-#include <algorithm>
-#include <array>
-#include <filesystem>
-#include <fstream>
-#include <iostream>
-#include <openssl/evp.h>
-#include <sstream>
-#include <string>
-#include <vector>
+#include "Util/Checksum.h"
 
-namespace fs = std::filesystem;
-constexpr size_t SHA256_DIGEST_LENGTH = 32;
-
-std::string sha256(const std::string &data)
+std::string Checksum::sha256(const std::string &data)
 {
     std::array<unsigned char, SHA256_DIGEST_LENGTH> hash{};
     EVP_MD_CTX *ctx = EVP_MD_CTX_new();
@@ -30,7 +19,7 @@ std::string sha256(const std::string &data)
     return sstream.str();
 }
 
-std::string normalizeLineEndings(const std::string &data)
+std::string Checksum::normalizeLineEndings(const std::string &data)
 {
     std::string normalized;
     normalized.reserve(data.size());
@@ -46,7 +35,7 @@ std::string normalizeLineEndings(const std::string &data)
     return normalized;
 }
 
-std::string readFile(const fs::path &path)
+std::string Checksum::readFile(const fs::path &path)
 {
     std::ifstream file(path, std::ios::binary);
     std::stringstream buffer;
@@ -55,7 +44,7 @@ std::string readFile(const fs::path &path)
     return normalizeLineEndings(content);
 }
 
-std::string generateChecksumForFolder(const fs::path &folder)
+std::string Checksum::generateChecksumForFolder(const fs::path &folder)
 {
     std::vector<std::string> fileHashes;
 
@@ -80,7 +69,7 @@ std::string generateChecksumForFolder(const fs::path &folder)
     return sha256(combinedHashes);
 }
 
-std::string generateChecksumForFile(const fs::path &file)
+std::string Checksum::generateChecksumForFile(const fs::path &file)
 {
     if (!fs::is_regular_file(file))
     {
