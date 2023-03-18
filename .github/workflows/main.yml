@@ -62,7 +62,7 @@ jobs:
       - name: Unit Tests
         working-directory: ./make
         run: |
-          ctest -j$(nproc) --build-config ${{ matrix.build-type }}
+          ctest -j$(nproc) --build-config ${{ matrix.build-type }} --output-on-failure
 
       # Cache only if job passed
       - run: |

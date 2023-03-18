@@ -1,43 +1,43 @@
-#include <boost/filesystem.hpp>
 #include <fstream>
 #include <string>
 #include <vector>
+#include <filesystem>
 
 #include "ArchiveExtractor/ArchiveExtractor.h"
 
 using namespace libzippp;
+namespace fs = std::filesystem;
 
-std::vector<ZipEntry> EpubExtractor::readEntries(const std::string &source)
+std::vector<ZipEntry> EpubExtractor::readEntries(const fs::path &source)
 {
     zipf.open(ZipArchive::ReadOnly);
     std::vector<ZipEntry> entries = zipf.getEntries();
     return entries;
 }
 
-void EpubExtractor::writeEntry(const std::string &outputFilename, const std::string &textData)
+void EpubExtractor::writeEntry(const fs::path &output_dir, const std::string &textData)
 {
-    boost::filesystem::path outputPath(outputFilename);
-    boost::filesystem::create_directories(outputPath.parent_path());
-    std::ofstream outputFile(outputFilename);
+    fs::create_directories(output_dir.parent_path());
+    std::ofstream outputFile(output_dir);
     outputFile << textData;
 }
 
-void EpubExtractor::extract(const std::string &source, const std::string &destinationDir)
+void EpubExtractor::extract()
 {
     std::vector<ZipEntry> entries = readEntries(source);
     for (const auto &entry : entries)
     {
         // ZipEntry entry = *ittr;
-        std::string name = entry.getName();
+        fs::path name = entry.getName();
         std::string textData = entry.readAsText();
-        std::string outputFilename = destinationDir + name;
-        writeEntry(outputFilename, textData);
+        fs::path output_file = output_dir / name;
+        writeEntry(output_file, textData);
     }
 }
 
-std::unique_ptr<ArchiveExtractor> createExtractor(const std::string &source, const std::string &destinationDir)
+std::unique_ptr<ArchiveExtractor> createExtractor(const fs::path &source, const fs::path &destinationDir)
 {
-    std::string extension = boost::filesystem::path(source).extension().string();
+    std::string extension = fs::path(source).extension().string();
     if (extension == ".epub")
     {
         return std::make_unique<EpubExtractor>(source, destinationDir);

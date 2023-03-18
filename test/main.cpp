@@ -1,19 +1,34 @@
-#include "ArchiveExtractor/ArchiveExtractor.h"
-#include "Util/Util.h"
 #include <gtest/gtest.h>
+#include "ArchiveExtractor/ArchiveExtractor.h"
+#include "Util/Checksum.h"
+#include "TestConstants.h"
 
-TEST(ArchiveExtractorTest, TestEpubExtractor) {
-    const std::string test_data_dir = boost::filesystem::current_path().string() + "/data";
-    const std::string src = test_data_dir + "/sample.epub";
-    const std::string dst = test_data_dir + "/extracted/";
-    const std::string entryFile = test_data_dir + "/extracted/mimetype";
+using namespace TestConstants;
+using namespace std;
+
+TEST(ArchiveExtractorTest, TestEpubExtractorFolderCheckSum) {
     
-    // get the extractor object from the factory function and perform the extraction
-    std::unique_ptr<ArchiveExtractor> extractor = createExtractor(src, dst);
+    
+    // extract
+    std::unique_ptr<ArchiveExtractor> extractor = createExtractor(SAMPLE_EPUB, DST);
+    extractor->extract();
 
-    extractor->extract(src, dst);
+    // checksum
+    std::string checksum_result = Checksum::generateChecksumForFolder(DST);
 
-    ASSERT_TRUE(boost::filesystem::exists(entryFile));
+    ASSERT_EQ(checksum_result, CHECKSUM_FOLDER_EXPECTED);
+}
+
+TEST(ArchiveExtractorTest, TestEpubExtractorFileCheckSum) {
+    
+    // extract
+    std::unique_ptr<ArchiveExtractor> extractor = createExtractor(SAMPLE_EPUB, DST);
+    extractor->extract();
+
+    // checksum
+    std::string checksum_result = Checksum::generateChecksumForFile(SAMPLE_ENTRY);
+
+    ASSERT_EQ(checksum_result, CHECKSUM_FILE_EXPECTED);
 }
 
 int main(int argc, char **argv)
