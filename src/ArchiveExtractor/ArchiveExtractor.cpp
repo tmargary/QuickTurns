@@ -8,17 +8,16 @@
 using namespace libzippp;
 namespace fs = std::filesystem;
 
-std::vector<ZipEntry> EpubExtractor::readEntries(const std::string &source)
+std::vector<ZipEntry> EpubExtractor::readEntries(const fs::path &source)
 {
     zipf.open(ZipArchive::ReadOnly);
     std::vector<ZipEntry> entries = zipf.getEntries();
     return entries;
 }
 
-void EpubExtractor::writeEntry(const std::string &output_dir, const std::string &textData)
+void EpubExtractor::writeEntry(const fs::path &output_dir, const std::string &textData)
 {
-    fs::path outputPath(output_dir);
-    fs::create_directories(outputPath.parent_path());
+    fs::create_directories(output_dir.parent_path());
     std::ofstream outputFile(output_dir);
     outputFile << textData;
 }
@@ -31,12 +30,12 @@ void EpubExtractor::extract()
         // ZipEntry entry = *ittr;
         fs::path name = entry.getName();
         std::string textData = entry.readAsText();
-        std::string output_file = output_dir / name;
+        fs::path output_file = output_dir / name;
         writeEntry(output_file, textData);
     }
 }
 
-std::unique_ptr<ArchiveExtractor> createExtractor(const std::string &source, const std::string &destinationDir)
+std::unique_ptr<ArchiveExtractor> createExtractor(const fs::path &source, const fs::path &destinationDir)
 {
     std::string extension = fs::path(source).extension().string();
     if (extension == ".epub")
