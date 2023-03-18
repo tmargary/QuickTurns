@@ -1,7 +1,6 @@
 add_subdirectory(MainView)
 add_subdirectory(ReaderView)
 add_subdirectory(ArchiveExtractor)
-add_subdirectory(Parser)
 add_subdirectory(Util)
 
 add_executable(QuickTurns main.cpp)
