@@ -2,13 +2,16 @@
 
 #include <string>
 
+namespace fs = std::filesystem;
+
 namespace TestConstants {
-    const std::string TEST_DIR = boost::filesystem::current_path().string();
-    const std::string TEST_DATA_DIR = TEST_DIR + "/data";
-    const std::string SAMPLE_EPUB = TEST_DATA_DIR + "/sample.epub";
-    const std::string DST = TEST_DATA_DIR + "/extracted/";
-    const std::string SAMPLE_ENTRY = TEST_DATA_DIR + "/extracted/OEBPS/ch01.html";
+    fs::path TEST_DIR = fs::current_path();
     
-    const std::string CHECKSUM_FOLDER_EXPECTED = "297a23c9b57686e3dca5c0244d1c994521ede2cea2945145faea15d85a47f662";
-    const std::string CHECKSUM_FILE_EXPECTED = "77e380b8a5373ffc6e815a7a82e253323faa5bbfb9fa613839dcff7374c7247c";
+    fs::path TEST_DATA_DIR = TEST_DIR / fs::path("data");
+    fs::path SAMPLE_EPUB = TEST_DATA_DIR / fs::path("sample.epub");
+    fs::path DST = TEST_DATA_DIR / fs::path("extracted");
+    fs::path SAMPLE_ENTRY = DST / fs::path("OEBPS") / fs::path("ch01.html");
+    
+    std::string CHECKSUM_FOLDER_EXPECTED = "297a23c9b57686e3dca5c0244d1c994521ede2cea2945145faea15d85a47f662";
+    std::string CHECKSUM_FILE_EXPECTED = "77e380b8a5373ffc6e815a7a82e253323faa5bbfb9fa613839dcff7374c7247c";
 }
