@@ -1,11 +1,12 @@
-#include <boost/filesystem.hpp>
 #include <fstream>
 #include <string>
 #include <vector>
+#include <filesystem>
 
 #include "ArchiveExtractor/ArchiveExtractor.h"
 
 using namespace libzippp;
+namespace fs = std::filesystem;
 
 std::vector<ZipEntry> EpubExtractor::readEntries(const std::string &source)
 {
@@ -16,8 +17,8 @@ std::vector<ZipEntry> EpubExtractor::readEntries(const std::string &source)
 
 void EpubExtractor::writeEntry(const std::string &output_dir, const std::string &textData)
 {
-    boost::filesystem::path outputPath(output_dir);
-    boost::filesystem::create_directories(outputPath.parent_path());
+    fs::path outputPath(output_dir);
+    fs::create_directories(outputPath.parent_path());
     std::ofstream outputFile(output_dir);
     outputFile << textData;
 }
@@ -28,16 +29,16 @@ void EpubExtractor::extract()
     for (const auto &entry : entries)
     {
         // ZipEntry entry = *ittr;
-        std::string name = entry.getName();
+        fs::path name = entry.getName();
         std::string textData = entry.readAsText();
-        std::string output_file = output_dir + name;
+        std::string output_file = output_dir / name;
         writeEntry(output_file, textData);
     }
 }
 
 std::unique_ptr<ArchiveExtractor> createExtractor(const std::string &source, const std::string &destinationDir)
 {
-    std::string extension = boost::filesystem::path(source).extension().string();
+    std::string extension = fs::path(source).extension().string();
     if (extension == ".epub")
     {
         return std::make_unique<EpubExtractor>(source, destinationDir);
