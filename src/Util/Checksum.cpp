@@ -1,5 +1,13 @@
 #include "Util/Checksum.h"
 
+#include <array>
+#include <vector>
+#include <sstream>
+#include <fstream>
+#include <iostream>
+#include <algorithm>
+#include <openssl/evp.h>
+
 std::string Checksum::sha256(const std::string &data)
 {
     std::array<unsigned char, SHA256_DIGEST_LENGTH> hash{};
@@ -37,7 +45,7 @@ std::string Checksum::normalizeLineEndings(const std::string &data)
 
 std::string Checksum::readFile(const fs::path &path)
 {
-    std::ifstream file(path, std::ios::binary);
+    std::ifstream file(path);
     std::stringstream buffer;
     buffer << file.rdbuf();
     std::string content = buffer.str();
