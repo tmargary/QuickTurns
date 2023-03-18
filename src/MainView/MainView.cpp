@@ -9,7 +9,7 @@ MainView::MainView(QWidget* parent): QWidget(parent) {
     button = new QPushButton("Button");
     button->setStyleSheet("background-color:green;");
     layout->addWidget(button);
-    QObject::connect(button, &QPushButton::clicked, [=](){
+    QObject::connect(button, &QPushButton::clicked, [this,layout](){
         QString fileName = QFileDialog::getOpenFileName(nullptr, "Open File", QDir::homePath());
         if (!fileName.isEmpty()) {
             QPushButton* newButton = new QPushButton(fileName);
@@ -19,8 +19,11 @@ MainView::MainView(QWidget* parent): QWidget(parent) {
             QObject::connect(newButton, &QPushButton::clicked, [=](){
                 readerView->show();
             });
+
+           
             newButton->show();
         }
     });
     button->show();
+    
 }
