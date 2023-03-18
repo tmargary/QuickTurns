@@ -3,7 +3,7 @@
 #include <string>
 
 namespace TestConstants {
-    const std::string TEST_DIR(boost::filesystem::path(__FILE__).parent_path().string());
+    const std::string TEST_DIR = boost::filesystem::current_path().string();
     const std::string TEST_DATA_DIR = TEST_DIR + "/data";
     const std::string SAMPLE_EPUB = TEST_DATA_DIR + "/sample.epub";
     const std::string DST = TEST_DATA_DIR + "/extracted/";

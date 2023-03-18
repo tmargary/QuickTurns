@@ -11,7 +11,7 @@ TEST(ArchiveExtractorTest, TestEpubExtractorFolderCheckSum) {
     
     // extract
     std::unique_ptr<ArchiveExtractor> extractor = createExtractor(SAMPLE_EPUB, DST);
-    extractor->extract(SAMPLE_EPUB, DST);
+    extractor->extract();
 
     // checksum
     std::string checksum_result = Checksum::generateChecksumForFolder(DST);
@@ -23,7 +23,7 @@ TEST(ArchiveExtractorTest, TestEpubExtractorFileCheckSum) {
     
     // extract
     std::unique_ptr<ArchiveExtractor> extractor = createExtractor(SAMPLE_EPUB, DST);
-    extractor->extract(SAMPLE_EPUB, DST);
+    extractor->extract();
 
     // checksum
     std::string checksum_result = Checksum::generateChecksumForFile(SAMPLE_ENTRY);

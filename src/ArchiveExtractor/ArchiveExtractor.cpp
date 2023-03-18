@@ -14,15 +14,15 @@ std::vector<ZipEntry> EpubExtractor::readEntries(const std::string &source)
     return entries;
 }
 
-void EpubExtractor::writeEntry(const std::string &outputFilename, const std::string &textData)
+void EpubExtractor::writeEntry(const std::string &output_dir, const std::string &textData)
 {
-    boost::filesystem::path outputPath(outputFilename);
+    boost::filesystem::path outputPath(output_dir);
     boost::filesystem::create_directories(outputPath.parent_path());
-    std::ofstream outputFile(outputFilename);
+    std::ofstream outputFile(output_dir);
     outputFile << textData;
 }
 
-void EpubExtractor::extract(const std::string &source, const std::string &destinationDir)
+void EpubExtractor::extract()
 {
     std::vector<ZipEntry> entries = readEntries(source);
     for (const auto &entry : entries)
@@ -30,8 +30,8 @@ void EpubExtractor::extract(const std::string &source, const std::string &destin
         // ZipEntry entry = *ittr;
         std::string name = entry.getName();
         std::string textData = entry.readAsText();
-        std::string outputFilename = destinationDir + name;
-        writeEntry(outputFilename, textData);
+        std::string output_file = output_dir + name;
+        writeEntry(output_file, textData);
     }
 }
 
