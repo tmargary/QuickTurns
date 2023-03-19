@@ -7,7 +7,7 @@ using namespace TestConstants;
 using namespace std;
 
 TEST(ArchiveExtractorTest, TestEpubExtractorFolderCheckSum) {
-    
+
     
     // extract
     std::unique_ptr<ArchiveExtractor> extractor = createExtractor(SAMPLE_EPUB, DST);

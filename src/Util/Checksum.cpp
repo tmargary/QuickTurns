@@ -62,8 +62,8 @@ std::string Checksum::generateChecksumForFolder(const fs::path &folder)
         {
             const std::string fileContent = readFile(entry.path());
             const std::string fileHash = sha256(fileContent);
-            fileHashes.push_back(fileHash);
-        }
+        fileHashes.push_back(fileHash);
+    }
     }
 
     std::sort(fileHashes.begin(), fileHashes.end());

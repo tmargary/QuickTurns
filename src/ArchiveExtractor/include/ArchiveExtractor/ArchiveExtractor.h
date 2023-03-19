@@ -21,10 +21,14 @@ class ArchiveExtractor
 class EpubExtractor : public ArchiveExtractor
 {
   public:
-    EpubExtractor(const fs::path &src, const fs::path &out) : source(src), output_dir(out), zipf(src)
+    EpubExtractor(const std::string &src, const std::string &out) : source(src), output_dir(out), zipf(src)
     {
-        std::cout;
     }
+
+    EpubExtractor(const fs::path &src, const fs::path &out) : EpubExtractor(src.string(), out.string())
+    {
+    }
+
     ~EpubExtractor() = default;
 
     std::vector<ZipEntry> readEntries(const fs::path &source) override;
