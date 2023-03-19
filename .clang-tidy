@@ -61,6 +61,7 @@ Checks: >
   modernize-use-nullptr,
   modernize-use-override,
   modernize-use-using,
+  misc-const-correctness,
   performance-for-range-copy,
   performance-implicit-conversion-in-loop,
   performance-unnecessary-copy-initialization,

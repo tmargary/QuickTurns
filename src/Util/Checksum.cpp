@@ -45,10 +45,10 @@ std::string Checksum::normalizeLineEndings(const std::string &data)
 
 std::string Checksum::readFile(const fs::path &path)
 {
-    std::ifstream file(path);
+    const std::ifstream file(path);
     std::stringstream buffer;
     buffer << file.rdbuf();
-    std::string content = buffer.str();
+    const std::string content = buffer.str();
     return normalizeLineEndings(content);
 }
 
@@ -60,8 +60,8 @@ std::string Checksum::generateChecksumForFolder(const fs::path &folder)
     {
         if (entry.is_regular_file())
         {
-            std::string fileContent = readFile(entry.path());
-            std::string fileHash = sha256(fileContent);
+            const std::string fileContent = readFile(entry.path());
+            const std::string fileHash = sha256(fileContent);
             fileHashes.push_back(fileHash);
         }
     }
@@ -84,6 +84,6 @@ std::string Checksum::generateChecksumForFile(const fs::path &file)
         throw std::runtime_error("Invalid file path");
     }
 
-    std::string fileContent = readFile(file);
+    const std::string fileContent = readFile(file);
     return sha256(fileContent);
 }

@@ -14,7 +14,7 @@ TEST(ArchiveExtractorTest, TestEpubExtractorFolderCheckSum) {
     extractor->extract();
 
     // checksum
-    std::string checksum_result = Checksum::generateChecksumForFolder(DST);
+    const std::string checksum_result = Checksum::generateChecksumForFolder(DST);
 
     ASSERT_EQ(checksum_result, CHECKSUM_FOLDER_EXPECTED);
 }
@@ -26,7 +26,7 @@ TEST(ArchiveExtractorTest, TestEpubExtractorFileCheckSum) {
     extractor->extract();
 
     // checksum
-    std::string checksum_result = Checksum::generateChecksumForFile(SAMPLE_ENTRY);
+    const std::string checksum_result = Checksum::generateChecksumForFile(SAMPLE_ENTRY);
 
     ASSERT_EQ(checksum_result, CHECKSUM_FILE_EXPECTED);
 }
