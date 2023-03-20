@@ -1,7 +1,7 @@
+#include <filesystem>
 #include <fstream>
 #include <string>
 #include <vector>
-#include <filesystem>
 
 #include "ArchiveExtractor/ArchiveExtractor.h"
 

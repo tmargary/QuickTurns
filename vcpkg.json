@@ -6,10 +6,7 @@
         "gtest",
         "qt5-base",
         "boost-iostreams",
-        "boost-filesystem",
         "libzippp",
-        "libzip",
-        "zlib",
         "openssl"
     ]
 }

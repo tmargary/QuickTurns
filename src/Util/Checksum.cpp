@@ -1,12 +1,12 @@
 #include "Util/Checksum.h"
 
+#include <algorithm>
 #include <array>
-#include <vector>
-#include <sstream>
 #include <fstream>
 #include <iostream>
-#include <algorithm>
 #include <openssl/evp.h>
+#include <sstream>
+#include <vector>
 
 std::string Checksum::sha256(const std::string &data)
 {
@@ -52,7 +52,6 @@ std::string Checksum::readFile(const fs::path &path)
     return normalizeLineEndings(content);
 }
 
-
 std::string Checksum::generateChecksumForFolder(const fs::path &folder)
 {
     std::vector<std::string> fileHashes;
@@ -63,8 +62,8 @@ std::string Checksum::generateChecksumForFolder(const fs::path &folder)
         {
             const std::string fileContent = readFile(entry.path());
             const std::string fileHash = sha256(fileContent);
-        fileHashes.push_back(fileHash);
-    }
+            fileHashes.push_back(fileHash);
+        }
     }
 
     std::sort(fileHashes.begin(), fileHashes.end());
