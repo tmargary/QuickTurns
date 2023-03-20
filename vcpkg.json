@@ -5,7 +5,6 @@
     "dependencies": [
         "gtest",
         "qt5-base",
-        "boost-iostreams",
         "libzippp",
         "openssl"
     ]
