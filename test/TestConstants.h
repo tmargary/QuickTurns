@@ -7,7 +7,7 @@ namespace fs = std::filesystem;
 namespace TestConstants {
     fs::path TEST_DIR = fs::current_path();
     
-    fs::path TEST_DATA_DIR = TEST_DIR / fs::path("data");
+    fs::path TEST_DATA_DIR = TEST_DIR / fs::path("test") / fs::path("data");
     fs::path SAMPLE_EPUB = TEST_DATA_DIR / fs::path("sample.epub");
     fs::path DST = TEST_DATA_DIR / fs::path("extracted");
     fs::path SAMPLE_ENTRY = DST / fs::path("OEBPS") / fs::path("ch01.html");
