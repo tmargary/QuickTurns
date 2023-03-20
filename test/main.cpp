@@ -1,32 +1,33 @@
-#include <gtest/gtest.h>
 #include "ArchiveExtractor/ArchiveExtractor.h"
-#include "Util/Checksum.h"
 #include "TestConstants.h"
+#include "Util/Checksum.h"
+#include <gtest/gtest.h>
 
 using namespace TestConstants;
 using namespace std;
 
-TEST(ArchiveExtractorTest, TestEpubExtractorFolderCheckSum) {
-    
-    
+TEST(ArchiveExtractorTest, TestEpubExtractorFolderCheckSum)
+{
+
     // extract
     std::unique_ptr<ArchiveExtractor> extractor = createExtractor(SAMPLE_EPUB, DST);
     extractor->extract();
 
     // checksum
-    std::string checksum_result = Checksum::generateChecksumForFolder(DST);
+    const std::string checksum_result = Checksum::generateChecksumForFolder(DST);
 
     ASSERT_EQ(checksum_result, CHECKSUM_FOLDER_EXPECTED);
 }
 
-TEST(ArchiveExtractorTest, TestEpubExtractorFileCheckSum) {
-    
+TEST(ArchiveExtractorTest, TestEpubExtractorFileCheckSum)
+{
+
     // extract
     std::unique_ptr<ArchiveExtractor> extractor = createExtractor(SAMPLE_EPUB, DST);
     extractor->extract();
 
     // checksum
-    std::string checksum_result = Checksum::generateChecksumForFile(SAMPLE_ENTRY);
+    const std::string checksum_result = Checksum::generateChecksumForFile(SAMPLE_ENTRY);
 
     ASSERT_EQ(checksum_result, CHECKSUM_FILE_EXPECTED);
 }
