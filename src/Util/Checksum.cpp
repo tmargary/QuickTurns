@@ -45,12 +45,13 @@ std::string Checksum::normalizeLineEndings(const std::string &data)
 
 std::string Checksum::readFile(const fs::path &path)
 {
-    const std::ifstream file(path);
+    const std::ifstream file(path, std::ios::binary);
     std::stringstream buffer;
     buffer << file.rdbuf();
     const std::string content = buffer.str();
     return normalizeLineEndings(content);
 }
+
 
 std::string Checksum::generateChecksumForFolder(const fs::path &folder)
 {
