@@ -1,5 +1,4 @@
-add_subdirectory(MainView)
-add_subdirectory(ReaderView)
+add_subdirectory(UserInterface)
 add_subdirectory(ArchiveExtractor)
 add_subdirectory(Util)
 
@@ -11,9 +10,7 @@ target_link_libraries(QuickTurns PRIVATE
     Qt::Core
     Qt::Gui
     Qt::Widgets
-    ReaderView
-    MainView
-    ArchiveExtractor
+    UserInterface
 )
 
 set_target_properties(QuickTurns PROPERTIES
@@ -29,7 +26,7 @@ install(TARGETS QuickTurns
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR})
 
 # Define the test data files to be copied
-set(copy_source_dir "${CMAKE_SOURCE_DIR}/test/data/")
+set(copy_source_dir "${CMAKE_SOURCE_DIR}/test/data")
 set(copy_dest_dir "${CMAKE_BINARY_DIR}/test/data/")
 set(copy_file_name "sample.epub")
 

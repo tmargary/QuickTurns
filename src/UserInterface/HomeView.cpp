@@ -2,10 +2,10 @@
 #include <QFileDialog>
 #include <QHBoxLayout>
 
-#include "MainView/MainView.h"
-#include "ReaderView/ReaderView.h"
+#include "HomeView.h"
+#include "ReaderView.h"
 
-MainView::MainView(QWidget* parent): QWidget(parent) {
+HomeView::HomeView(QWidget* parent): QWidget(parent) {
     QHBoxLayout *layout = new QHBoxLayout(parent);
     this->setLayout(layout);
     button = new QPushButton("Button");
