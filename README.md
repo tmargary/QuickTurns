@@ -23,33 +23,45 @@ Linux
 Install the QT development tools using your distribution's package manager.
 
 - Ubuntu
+
     ```
-    sudo apt-get update
-    sudo apt-get install build-essential qt5-qmake qtbase5-dev
+    sudo apt update
+    sudo apt upgrade
+    sudo apt install qt6-default libqt6webenginecore-dev libqt6webenginewidgets-dev
+    qmake -v
     ```
-- Fedora
-    ```
-    sudo dnf update
-    sudo dnf groupinstall "Development Tools"
-    sudo dnf install qt5-devel
-    ```
-- CentOS/RHEL
-    ```
-    sudo yum update
-    sudo yum groupinstall "Development Tools"
-    sudo yum install qt5-devel
-    ```
-- Arch Linux
+
+- Arch
+
     ```
     sudo pacman -Syu
-    sudo pacman -S base-devel
-    sudo pacman -S qt5-base
+    sudo pacman -S qt6-base qt6-webengine
+    qmake -v
     ```
+
+- Fedora
+
+    ```
+    sudo dnf update
+    sudo dnf install qt6-qtbase-devel qt6-qtwebengine-devel
+    qmake -v
+    ```
+
+- CentOS/RHEL
+
+    ```
+    sudo yum install epel-release
+    sudo yum update
+    sudo yum install qt6-qtbase-devel qt6-qtwebengine-devel
+    qmake -v
+    ```
+
 - openSUSE
+
     ```
     sudo zypper update
-    sudo zypper install -t pattern devel_basis
-    sudo zypper install libqt5-qtbase-devel
+    sudo zypper install libQt6WebEngineWidgets5 libQt6WebEngineCore5-devel
+    qmake -v
     ```
 
 ## Installation
