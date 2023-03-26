@@ -4,7 +4,6 @@
     "builtin-baseline": "20759c873e6b1ae1968e86d42ba70cf2bde0f7a4",
     "dependencies": [
         "gtest",
-        "qt",
         "libzippp",
         "openssl"
     ]
