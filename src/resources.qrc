@@ -1,0 +1,11 @@
+<RCC>
+    <qresource prefix="/">
+        <file>../external/epub_dist/epub.js</file>
+        <file>Styles/continuous-spreads.html</file>
+        <file>Styles/examples.css</file>
+        <file>Styles/ajax-loader.gif</file>
+        <file>../test/data/sample.epub</file>
+    </qresource>
+</RCC>
+
+

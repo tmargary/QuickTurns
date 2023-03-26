@@ -33,7 +33,6 @@
 
 *.user
 /build
-/external
 /.vscode
 /.cache
 src/EpubReaderDummy/.vscode
