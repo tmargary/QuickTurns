@@ -11,8 +11,7 @@ target_link_libraries(QuickTurns PRIVATE
     Qt${QT_VERSION_MAJOR}::Core
     Qt${QT_VERSION_MAJOR}::Gui
     Qt${QT_VERSION_MAJOR}::Widgets
-    ReaderView
-    MainView
+    UserInterface
     ArchiveExtractor
 )
 
