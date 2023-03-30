@@ -9,7 +9,4 @@ class ReaderView : public QWidget {
 public:
     explicit ReaderView(QWidget *parent = nullptr);
     virtual ~ReaderView() = default;
-
-private:
-    HttpFileServer *httpServer;
 };
