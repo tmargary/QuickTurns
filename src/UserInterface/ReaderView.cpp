@@ -8,8 +8,10 @@
 #include <QWidget>
 #include <QMainWindow>
 
-#include "Server.h"
-
+void launchServer(int port, const std::string& path) {
+    std::string command = "python /home/tigran/Documents/_current/QuickTurns/src/UserInterface/Server.py " + std::to_string(port) + " " + path;
+    std::system(command.c_str());
+}
 
 ReaderView::ReaderView(QWidget *parent) : QWidget(parent) {
     // Create the top part of the window
@@ -35,8 +37,8 @@ ReaderView::ReaderView(QWidget *parent) : QWidget(parent) {
     QString serverPath = epubFileInfo.absolutePath();
     int serverPort = 8000;
 
-    httpServer = new HttpFileServer(this);
-    httpServer->start(serverPort, serverPath);
+    std::thread serverThread(launchServer, serverPort, serverPath.toStdString());
+    serverThread.detach();
 
     QUrl bookPath = QUrl(QString("http://localhost:%1/%2").arg(serverPort).arg(epubFileInfo.fileName()));
     webView->setUrl(QUrl(QStringLiteral("qrc:/Styles/continuous-spreads.html?url=%1").arg(bookPath.toString())));
