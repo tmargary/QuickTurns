@@ -9,9 +9,11 @@
 #include <QMainWindow>
 
 void launchServer(int port, const std::string& path) {
-    std::string command = "python /home/tigran/Documents/_current/QuickTurns/src/UserInterface/Server.py " + std::to_string(port) + " " + path;
+    std::string serverPath = "./UserInterface/Server.py";
+    std::string command = "python " + serverPath + " " + std::to_string(port) + " " + path;
     std::system(command.c_str());
 }
+
 
 ReaderView::ReaderView(QWidget *parent) : QWidget(parent) {
     // Create the top part of the window
@@ -26,8 +28,9 @@ ReaderView::ReaderView(QWidget *parent) : QWidget(parent) {
     topLayout->addWidget(rightButton);
     
     // Create the middle part of the window
-    QWebEngineProfile *profile = new QWebEngineProfile(this);
+    QWebEngineProfile *profile = new QWebEngineProfile();
     QWebEnginePage *page = new QWebEnginePage(profile, this);
+    profile->setParent(page);
     QWebEngineView *webView = new QWebEngineView(this);
     webView->setPage(page);
     webView->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
