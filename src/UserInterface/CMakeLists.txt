@@ -8,7 +8,6 @@ add_library(UserInterface STATIC
     StackedView.cpp
     HomeView.cpp
     ReaderView.cpp
-    Server.cpp
 )
 
 target_include_directories(UserInterface PUBLIC include)
