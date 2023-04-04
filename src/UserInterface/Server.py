@@ -24,7 +24,11 @@ class CORSRequestHandler(SimpleHTTPRequestHandler):
         self.send_header("Access-Control-Allow-Headers", "Content-Type")
         super().end_headers()
 
-httpd = HTTPServer(("", port), CORSRequestHandler)
+try:
+    httpd = HTTPServer(("", port), CORSRequestHandler)
+except Exception as e:
+    print("Port 8000 already open.")
+
 print(f"Serving on port {port} in directory {path}")
 
 try:
