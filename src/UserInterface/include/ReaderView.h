@@ -1,7 +1,6 @@
 #pragma once
 
 #include <QtWidgets>
-#include "Server.h"
 
 class ReaderView : public QWidget {
     Q_OBJECT
