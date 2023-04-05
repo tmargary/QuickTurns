@@ -1,5 +1,5 @@
 #pragma once
-
+#include <QListWidget>
 #include <QPushButton>
 #include <QHBoxLayout>
 #include <QWidget>
@@ -9,11 +9,13 @@ class HomeView : public QWidget {
 
 public:
     explicit HomeView(QWidget *parent = nullptr);
+    void setupListWidget();
+    void setupAddFileButton();
     void saveButtonConfig(const QString &filePath);
     void loadButtonConfig();
 
 private:
-    QHBoxLayout *layout;
-    QPushButton *button;
+    QListWidget *listWidget;
+    QVBoxLayout *layout;
     QString configFilePath;
 };

@@ -1,74 +1,91 @@
-#include <QPushButton>
 #include <QFileDialog>
 #include <QHBoxLayout>
+#include <QListWidget>
+#include <QListWidgetItem>
 #include <QtCore/QTextStream>
 #include <iostream>
 
 #include "HomeView.h"
 #include "ReaderView.h"
 
-HomeView::HomeView(QWidget *parent) : QWidget(parent) {
-    layout = new QHBoxLayout(parent);
+HomeView::HomeView(QWidget *parent) : QWidget(parent)
+{
+    layout = new QVBoxLayout(parent);
     this->setLayout(layout);
-    button = new QPushButton("Button");
-    button->setStyleSheet("background-color:green;");
-    layout->addWidget(button);
 
     // Set the path to the configuration file
     configFilePath = QCoreApplication::applicationDirPath() + "/config.txt";
 
-    // Load the buttons from the configuration file
+    setupListWidget();
+    setupAddFileButton();
+}
+
+void HomeView::setupListWidget()
+{
+    listWidget = new QListWidget;
+    layout->addWidget(listWidget);
+
+    // Load the items from the configuration file
     loadButtonConfig();
 
-    QObject::connect(button, &QPushButton::clicked, [=]() {
+    QObject::connect(listWidget, &QListWidget::itemClicked, [=](QListWidgetItem *item) {
+        ReaderView *readerView = new ReaderView;
+        readerView->show();
+    });
+}
+
+void HomeView::setupAddFileButton()
+{
+    QPushButton *addFileButton = new QPushButton("Add File");
+    layout->addWidget(addFileButton);
+
+    QObject::connect(addFileButton, &QPushButton::clicked, [=]() {
         const QString fileName = QFileDialog::getOpenFileName(nullptr, "Open File", QDir::homePath());
-        if (!fileName.isEmpty()) {
+        if (!fileName.isEmpty())
+        {
             // Copy the file to a directory
-            QString destinationPath = QCoreApplication::applicationDirPath() + "/files/" + QFileInfo(fileName).fileName();
+            QString destinationPath =
+                QCoreApplication::applicationDirPath() + "/files/" + QFileInfo(fileName).fileName();
             QFile::copy(fileName, destinationPath);
 
-            QPushButton *newButton = new QPushButton(destinationPath);
-            newButton->setStyleSheet("background-color: blue;");
-            layout->addWidget(newButton);
-            ReaderView *readerView = new ReaderView/*(destinationPath)*/;
-            QObject::connect(newButton, &QPushButton::clicked, [=]() {
-                readerView->show();
-            });
-            newButton->show();
+            QListWidgetItem *newItem = new QListWidgetItem(destinationPath);
+            listWidget->addItem(newItem);
 
-            // Save the new button's file path to the configuration file
+            // Save the new item's file path to the configuration file
             saveButtonConfig(destinationPath);
         }
     });
-    button->show();
 }
 
-void HomeView::saveButtonConfig(const QString &filePath) {
+void HomeView::saveButtonConfig(const QString &filePath)
+{
     QFile configFile(configFilePath);
-    if (configFile.open(QIODevice::Append | QIODevice::Text)) {
+    if (configFile.open(QIODevice::Append | QIODevice::Text))
+    {
         QTextStream out(&configFile);
         out << filePath << "\n";
         configFile.close();
     }
 }
 
-void HomeView::loadButtonConfig() {
+void HomeView::loadButtonConfig()
+{
     QFile configFile(configFilePath);
-    if (configFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
-        QTextStream in(&configFile);
-        while (!in.atEnd()) {
-            QString filePath = in.readLine();
-            QPushButton *newButton = new QPushButton(filePath);
-            newButton->setStyleSheet("background-color: blue;");
-            layout->addWidget(newButton);
-            ReaderView *readerView = new ReaderView;
-            QObject::connect(newButton, &QPushButton::clicked, [=]() {
-                readerView->show();
-            });
-            newButton->show();
-        }
-        configFile.close();
+    if (!configFile.open(QIODevice::ReadOnly))
+    {
+        return;
     }
+
+    QTextStream stream(&configFile);
+    while (!stream.atEnd())
+    {
+        QString filePath = stream.readLine();
+
+        QListWidgetItem *newItem = new QListWidgetItem(filePath);
+        listWidget->addItem(newItem);
+    }
+
+    configFile.close();
 }
 
 #include "moc_HomeView.cpp"
