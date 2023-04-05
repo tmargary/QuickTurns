@@ -7,18 +7,20 @@
 #include "HomeView.h"
 #include "ReaderView.h"
 
-class StackedView : public QWidget {
-    // Q_OBJECT  // Remove this line
+class StackedView : public QWidget
+{
+    Q_OBJECT
 
 public:
-    StackedView(QWidget *parent = nullptr);
+    explicit StackedView(QWidget *parent = nullptr);
 
-private slots:
+public slots:
+    void switchToReaderView(const QString &filePath);
     void switchView();
 
 private:
     HomeView *homeView;
     ReaderView *readerView;
-    QPushButton *button;
     QStackedWidget *stackedWidget;
+    QPushButton *button;
 };

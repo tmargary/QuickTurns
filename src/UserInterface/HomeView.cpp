@@ -2,6 +2,7 @@
 #include <QHBoxLayout>
 #include <QListWidget>
 #include <QListWidgetItem>
+#include <QCoreApplication>
 #include <QtCore/QTextStream>
 #include <iostream>
 
@@ -29,8 +30,7 @@ void HomeView::setupListWidget()
     loadButtonConfig();
 
     QObject::connect(listWidget, &QListWidget::itemClicked, [=](QListWidgetItem *item) {
-        ReaderView *readerView = new ReaderView;
-        readerView->show();
+        emit itemClicked(item->text());
     });
 }
 
@@ -44,8 +44,7 @@ void HomeView::setupAddFileButton()
         if (!fileName.isEmpty())
         {
             // Copy the file to a directory
-            QString destinationPath =
-                QCoreApplication::applicationDirPath() + "/files/" + QFileInfo(fileName).fileName();
+            QString destinationPath = QCoreApplication::applicationDirPath() + "/files/" + QFileInfo(fileName).fileName();
             QFile::copy(fileName, destinationPath);
 
             QListWidgetItem *newItem = new QListWidgetItem(destinationPath);

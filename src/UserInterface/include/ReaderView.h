@@ -1,11 +1,17 @@
 #pragma once
 
-#include <QtWidgets>
+#include <QWidget>
 
-class ReaderView : public QWidget {
+class QWebEngineView;
+
+class ReaderView : public QWidget
+{
     Q_OBJECT
 
 public:
     explicit ReaderView(QWidget *parent = nullptr);
-    virtual ~ReaderView() = default;
+    void loadFile(const QString &filePath);
+
+private:
+    QWebEngineView *webView;
 };

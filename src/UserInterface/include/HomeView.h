@@ -14,6 +14,9 @@ public:
     void saveButtonConfig(const QString &filePath);
     void loadButtonConfig();
 
+signals:
+    void itemClicked(const QString &filePath);
+
 private:
     QListWidget *listWidget;
     QVBoxLayout *layout;

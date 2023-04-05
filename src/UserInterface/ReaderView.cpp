@@ -6,7 +6,10 @@
 #include <QWebEnginePage>
 #include <QWebEngineSettings>
 #include <QWidget>
+#include <QVBoxLayout>
 #include <QMainWindow>
+#include <QFileInfo>
+#include <thread>
 
 void launchServer(int port, const std::string& path) {
     std::string serverPath = "./UserInterface/Server.py";
@@ -14,18 +17,26 @@ void launchServer(int port, const std::string& path) {
     std::system(command.c_str());
 }
 
-
 ReaderView::ReaderView(QWidget *parent) : QWidget(parent) {
 
     // Create the middle part of the window
-    QWebEngineProfile *profile = new QWebEngineProfile();
+    QWebEngineProfile *profile = new QWebEngineProfile(this);
     QWebEnginePage *page = new QWebEnginePage(profile, this);
-    profile->setParent(page);
-    QWebEngineView *webView = new QWebEngineView(this);
+    webView = new QWebEngineView(this);
     webView->setPage(page);
     webView->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-    
-    QString epubFilePath = "/home/tigran/Documents/_current/QuickTurns/test/data/sample.epub";
+
+    // Create the main layout and add the three parts
+    QVBoxLayout *mainLayout = new QVBoxLayout;
+    mainLayout->addWidget(webView, 1); // Set the web view to take up most of the space
+
+    // Set the main layout for the window
+    setLayout(mainLayout);
+}
+
+void ReaderView::loadFile(const QString &filePath)
+{
+    QString epubFilePath = filePath;
     QFileInfo epubFileInfo(epubFilePath);
     QString serverPath = epubFileInfo.absolutePath();
     int serverPort = 8000;
@@ -35,13 +46,6 @@ ReaderView::ReaderView(QWidget *parent) : QWidget(parent) {
 
     QUrl bookPath = QUrl(QString("http://localhost:%1/%2").arg(serverPort).arg(epubFileInfo.fileName()));
     webView->setUrl(QUrl(QStringLiteral("qrc:/Styles/continuous-spreads.html?url=%1").arg(bookPath.toString())));
-
-    // Create the main layout and add the three parts
-    QVBoxLayout *mainLayout = new QVBoxLayout;
-    mainLayout->addWidget(webView, 1); // Set the web view to take up most of the space
-
-    // Set the main layout for the window
-    setLayout(mainLayout);
 }
 
 #include "moc_ReaderView.cpp"
