@@ -35,7 +35,8 @@ jobs:
       - name: Install Qt
         uses: jurplel/install-qt-action@v3
         with:
-          modules: 'qtwebengine'
+          modules: 'qthttpserver qtwebchannel qtwebengine qtwebview'
+          version: '6.4.3'
 
       - name: Checkout
         uses: actions/checkout@v3
