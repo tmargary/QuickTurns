@@ -26,13 +26,7 @@ class CORSRequestHandler(SimpleHTTPRequestHandler):
 
 try:
     httpd = HTTPServer(("", port), CORSRequestHandler)
+    httpd.serve_forever()
+    print(f"Serving on port {port} in directory {path}")
 except Exception as e:
     print("Port 8000 already open.")
-
-print(f"Serving on port {port} in directory {path}")
-
-try:
-    httpd.serve_forever()
-except Exception as e:
-    print("Error starting the HTTP server:", e)
-    sys.exit(1)

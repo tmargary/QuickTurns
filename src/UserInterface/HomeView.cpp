@@ -44,7 +44,7 @@ void HomeView::setupAddFileButton()
         if (!fileName.isEmpty())
         {
             // Copy the file to a directory
-            QString destinationPath = QCoreApplication::applicationDirPath() + "/../test/data" + QFileInfo(fileName).fileName();
+            QString destinationPath = QCoreApplication::applicationDirPath() + "/../test/data/" + QFileInfo(fileName).fileName();
             QFile::copy(fileName, destinationPath);
 
             QListWidgetItem *newItem = new QListWidgetItem(destinationPath);
