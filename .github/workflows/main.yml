@@ -1,3 +1,4 @@
+
 name: build
 
 on:
@@ -19,11 +20,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
+        os: [ubuntu-latest, macos-latest]
         include:
-          - os: windows-latest
-            triplet: x64-windows-release
-            build-type: Release
           - os: ubuntu-latest
             triplet: x64-linux-release
             build-type: Release
@@ -32,11 +30,12 @@ jobs:
             build-type: Release
 
     steps:
-      - name: Install Qt
-        uses: jurplel/install-qt-action@v3
-        with:
-          modules: 'qtspeech qtwebchannel qtwebengine qtwebsockets qtwebview'
-          version: '6.4.3'
+      - name: Install Dependencies (Linux)
+        run: sudo apt install gperf libfontconfig1-dev libfreetype6-dev libx11-dev libx11-xcb-dev libxext-dev libxfixes-dev libxi-dev libxrender-dev libxcb1-dev libxcb-glx0-dev libxcb-keysyms1-dev libxcb-image0-dev libxcb-shm0-dev libxcb-icccm4-dev libxcb-sync0-dev libxcb-xfixes0-dev libxcb-shape0-dev libxcb-randr0-dev libxcb-xinerama0-dev libxcb-render-util0-dev libxkbcommon-dev libxkbcommon-x11-dev libx11-dev libxft-dev libxext-dev libgl1-mesa-dev libglu1-mesa-dev libgles2-mesa-dev libdbus-1-dev libxi-dev libxtst-dev autoconf-archive linux-headers-$(uname -r)
+        if: matrix.os == 'ubuntu-latest'
+      - name: Install Dependencies (macOS)
+        run: brew install autoconf automake libtool autoconf-archive
+        if: matrix.os == 'macos-latest'
 
       - name: Checkout
         uses: actions/checkout@v3
@@ -57,12 +56,10 @@ jobs:
         working-directory: ./make
         run: |
           cmake --build . --config ${{ matrix.build-type }} --parallel $(nproc)
-
       - name: Unit Tests
         working-directory: ./make
         run: |
           ctest -j$(nproc) --build-config ${{ matrix.build-type }} --output-on-failure
-
       # Cache only if job passed
       - run: |
          echo "RUNVCPKG_NO_CACHE=1" >> $GITHUB_ENV
