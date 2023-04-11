@@ -1,4 +1,3 @@
-
 name: build
 
 on:
@@ -20,8 +19,11 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, macos-latest]
+        os: [ubuntu-latest, macos-latest, windows-latest]
         include:
+          - os: windows-latest
+            triplet: x64-windows-release
+            build-type: Release
           - os: ubuntu-latest
             triplet: x64-linux-release
             build-type: Release
@@ -56,10 +58,12 @@ jobs:
         working-directory: ./make
         run: |
           cmake --build . --config ${{ matrix.build-type }} --parallel $(nproc)
+
       - name: Unit Tests
         working-directory: ./make
         run: |
           ctest -j$(nproc) --build-config ${{ matrix.build-type }} --output-on-failure
+
       # Cache only if job passed
       - run: |
          echo "RUNVCPKG_NO_CACHE=1" >> $GITHUB_ENV
