@@ -5,12 +5,13 @@ add_subdirectory(Util)
 
 add_executable(QuickTurns main.cpp)
 
-find_package(Qt5 COMPONENTS Core Gui Widgets)
+find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets)
+find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core Gui Widgets)
 
 target_link_libraries(QuickTurns PRIVATE
-    Qt::Core
-    Qt::Gui
-    Qt::Widgets
+    Qt${QT_VERSION_MAJOR}::Core
+    Qt${QT_VERSION_MAJOR}::Gui
+    Qt${QT_VERSION_MAJOR}::Widgets
     ReaderView
     MainView
     ArchiveExtractor

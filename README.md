@@ -10,6 +10,60 @@ In addition to the forthcoming text-to-speech engine, QuickTurns also offers oth
 
 QuickTurns is a highly versatile ebook reader that offers exceptional performance and features. Its promise of a special text-to-speech engine in the future makes it an excellent option for people who want to switch between reading and listening to their favorite books.
 
+## Setting up QT Environment
+
+Windows/Mac
+
+1. Download the QT installer for Windows from the [QT online-installers](https://www.qt.io/download). For offline installer [QT offline-installers](https://www.qt.io/offline-installers)
+2. Run the installer and follow the instructions to install QT on your computer. Make sure to select the components you want to install.
+3. Make sure Qt location is added to PATH environment variables.
+
+Linux
+
+Install the QT development tools using your distribution's package manager.
+
+- Ubuntu
+
+    ```
+    sudo apt update
+    sudo apt upgrade
+    sudo apt install qt6-default libqt6webenginecore-dev libqt6webenginewidgets-dev
+    qmake -v
+    ```
+
+- Arch
+
+    ```
+    sudo pacman -Syu
+    sudo pacman -S qt6-base qt6-webengine
+    qmake -v
+    ```
+
+- Fedora
+
+    ```
+    sudo dnf update
+    sudo dnf install qt6-qtbase-devel qt6-qtwebengine-devel
+    qmake -v
+    ```
+
+- CentOS/RHEL
+
+    ```
+    sudo yum install epel-release
+    sudo yum update
+    sudo yum install qt6-qtbase-devel qt6-qtwebengine-devel
+    qmake -v
+    ```
+
+- openSUSE
+
+    ```
+    sudo zypper update
+    sudo zypper install libQt6WebEngineWidgets5 libQt6WebEngineCore5-devel
+    qmake -v
+    ```
+
 ## Installation
 - `git clone --recurse-submodules git@github.com:tmargary/QuickTurns.git`
 - `cd QuickTurns`
