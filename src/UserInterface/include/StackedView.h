@@ -22,5 +22,5 @@ private:
     HomeView *homeView;
     ReaderView *readerView;
     QStackedWidget *stackedWidget;
-    QPushButton *button;
+    QPushButton *homeButton;
 };

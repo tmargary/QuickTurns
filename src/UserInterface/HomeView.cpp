@@ -1,8 +1,8 @@
+#include <QCoreApplication>
 #include <QFileDialog>
 #include <QHBoxLayout>
 #include <QListWidget>
 #include <QListWidgetItem>
-#include <QCoreApplication>
 #include <QtCore/QTextStream>
 #include <iostream>
 
@@ -21,22 +21,14 @@ HomeView::HomeView(QWidget *parent) : QWidget(parent)
     setupAddFileButton();
 }
 
-void HomeView::setupListWidget()
-{
-    listWidget = new QListWidget;
-    layout->addWidget(listWidget);
-
-    // Load the items from the configuration file
-    loadButtonConfig();
-
-    QObject::connect(listWidget, &QListWidget::itemClicked, [=](QListWidgetItem *item) {
-        emit itemClicked(item->text());
-    });
-}
-
 void HomeView::setupAddFileButton()
 {
     QPushButton *addFileButton = new QPushButton("Add File");
+    addFileButton->setStyleSheet("QPushButton { background-color: #f7f7f7; border-radius: 8px; color: black; }"
+                                 "QPushButton:hover { background-color: #e3e3e3; }"
+                                 "QPushButton:pressed { background-color: #d1d1d1; }");
+    addFileButton->setFixedHeight(30);
+
     layout->addWidget(addFileButton);
 
     QObject::connect(addFileButton, &QPushButton::clicked, [=]() {
@@ -44,7 +36,8 @@ void HomeView::setupAddFileButton()
         if (!fileName.isEmpty())
         {
             // Copy the file to a directory
-            QString destinationPath = QCoreApplication::applicationDirPath() + "/../test/data/" + QFileInfo(fileName).fileName();
+            QString destinationPath =
+                QCoreApplication::applicationDirPath() + "/../test/data/" + QFileInfo(fileName).fileName();
             QFile::copy(fileName, destinationPath);
 
             QListWidgetItem *newItem = new QListWidgetItem(destinationPath);
@@ -54,6 +47,18 @@ void HomeView::setupAddFileButton()
             saveButtonConfig(destinationPath);
         }
     });
+}
+
+void HomeView::setupListWidget()
+{
+    listWidget = new QListWidget;
+    layout->addWidget(listWidget);
+
+    // Load the items from the configuration file
+    loadButtonConfig();
+
+    QObject::connect(listWidget, &QListWidget::itemClicked,
+                     [=](QListWidgetItem *item) { emit itemClicked(item->text()); });
 }
 
 void HomeView::saveButtonConfig(const QString &filePath)
