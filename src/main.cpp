@@ -1,14 +1,15 @@
 #include <QApplication>
 #include <QWidget>
 
-#include "MainView/MainView.h"
-#include "ReaderView/ReaderView.h"
+#include "StackedView.h"
 
-int main(int argc, char *argv[])
-{
+
+int main(int argc, char *argv[]) {
     const QApplication app(argc, argv);
-    MainView mainView;
-    mainView.show();
 
-    return QApplication::exec();
+    {
+        StackedView stackedView;
+        stackedView.show();
+        return app.exec();
+    }
 }
