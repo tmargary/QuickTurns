@@ -1,8 +1,9 @@
 #include "bookDB.h"
-#include <sqlite3.h> 
+#include <sqlite3.h>
 #include <string>
 
-int main() {
+int main()
+{
     bookDB dp;
 /*
     std::string path = "path 2";
@@ -18,26 +19,27 @@ int main() {
         std::cout << "Error: bookMap is null" << std::endl;
         return 1;
     }
-    for (auto it = bookMap->begin(); it != bookMap->end(); ++it) {
-        std::cout << it->first << ": "; 
+    for (auto it = bookMap->begin(); it != bookMap->end(); ++it)
+    {
+        std::cout << it->first << ": ";
         it->second.print();
     }
-    std::cout <<std::endl;
+    std::cout << std::endl;
 
     dp.changeLastePage(5, 15);
-    
+
     bookMap = dp.getData();
-    if (!bookMap) {
+    if (!bookMap)
+    {
         std::cout << "Error: bookMap is null" << std::endl;
         return 1;
     }
-    for (auto it = bookMap->begin(); it != bookMap->end(); ++it) {
-        std::cout << it->first << ": "; 
+    for (auto it = bookMap->begin(); it != bookMap->end(); ++it)
+    {
+        std::cout << it->first << ": ";
         it->second.print();
     }
 
-    
-    
     delete bookMap;
     return 0;
 }
