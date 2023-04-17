@@ -68,7 +68,7 @@ void HomeView::setupListWidget()
     layout->addWidget(listWidget);
 
     // Load the items from the database
-    std::map<int, Book> *bookMap = database.getData();
+    std::map<int, Book> *bookMap = database.getBooksList();
     if (bookMap)
     {
         for (const auto &pair : *bookMap)
@@ -89,7 +89,7 @@ void HomeView::setupListWidget()
 int HomeView::saveButtonConfig(const std::string &filePath)
 {
     Book girq(filePath, "bName", "aName", 1999, 0);
-    int bookId = database.addBook(girq);
+    int bookId = database.addBookToDatabase(girq);
     return bookId;
 }
 

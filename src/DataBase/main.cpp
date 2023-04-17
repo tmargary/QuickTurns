@@ -12,9 +12,9 @@ int main()
     int year = 1994;
     int p = 45;
     book girq(path, bName, aName, year, p);
-    dp.addBook(girq);
+    dp.addBookToDatabase(girq);
 
-    std::map<int, book>* bookMap = dp.getData();
+    std::map<int, book>* bookMap = dp.getBooksList();
     if (!bookMap) {
         std::cout << "Error: bookMap is null" << std::endl;
         return 1;
@@ -28,7 +28,7 @@ int main()
 
     dp.changeLastePage(5, 15);
 
-    bookMap = dp.getData();
+    bookMap = dp.getBooksList();
     if (!bookMap)
     {
         std::cout << "Error: bookMap is null" << std::endl;

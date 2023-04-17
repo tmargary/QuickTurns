@@ -7,7 +7,12 @@ int BookDB::generateRandomId()
     return randomId;
 }
 
-BookDB::BookDB(const std::string& dbFilePath)
+BookDB::BookDB(const std::string &dbFilePath)
+{
+    createTable(dbFilePath);
+}
+
+void BookDB::createTable(const std::string &dbFilePath)
 {
     bookDBTable = "CREATE TABLE IF NOT EXISTS BOOKS("
                   "ID INT PRIMARY KEY NOT NULL, "
@@ -27,16 +32,16 @@ BookDB::BookDB(const std::string& dbFilePath)
         std::cout << "Table created Successfully" << std::endl;
 }
 
-int BookDB::addBook(Book curBook)
+int BookDB::addBookToDatabase(Book curBook)
 {
-    int randomId = generateRandomId();
+    int randomId = generateUniqueId();
 
-    // Check if the generated ID exists in the database, generate a new one until it's unique
-    while (idExists(randomId))
-    {
-        randomId = generateRandomId();
-    }
+    executeInsertQuery(randomId, curBook);
+    return randomId;
+}
 
+void BookDB::executeInsertQuery(int randomId, Book curBook)
+{
     bookDBTable = "INSERT INTO BOOKS VALUES (" + std::to_string(randomId) + ", '" + curBook.bookPath + "', '" +
                   curBook.bookName + "', '" + curBook.bookAuthorName + "', " + std::to_string(curBook.bookYear) + ", " +
                   std::to_string(curBook.lastPage) + ");";
@@ -49,6 +54,17 @@ int BookDB::addBook(Book curBook)
     }
     else
         std::cout << "Records created Successfully!" << std::endl;
+}
+
+int BookDB::generateUniqueId()
+{
+    int randomId = generateRandomId();
+
+    while (idExists(randomId))
+    {
+        randomId = generateRandomId();
+    }
+
     return randomId;
 }
 
@@ -76,8 +92,7 @@ bool BookDB::idExists(int id)
     return exists;
 }
 
-
-std::map<int, Book> *BookDB::getData()
+std::map<int, Book> *BookDB::getBooksList()
 {
     std::map<int, Book> *bookList = new std::map<int, Book>();
     bookDBTable = "SELECT * FROM BOOKS";
@@ -147,7 +162,7 @@ Book BookDB::getBookById(int bookId)
         return result;
     }
 
-    sqlite3_bind_int(stmt, 1, bookId); // Bind the randomId to the query
+    sqlite3_bind_int(stmt, 1, bookId);
 
     if (sqlite3_step(stmt) == SQLITE_ROW)
     {
@@ -167,7 +182,6 @@ Book BookDB::getBookById(int bookId)
     sqlite3_finalize(stmt);
     return result;
 }
-
 
 BookDB::~BookDB()
 {

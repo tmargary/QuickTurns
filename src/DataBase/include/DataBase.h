@@ -33,12 +33,17 @@ class BookDB
     sqlite3_stmt *stmt;
 
   public:
-    BookDB(const std::string& dbFilePath);
-    ~BookDB();
-    int addBook(Book);
-    std::map<int, Book> *getData();
-    void changeLastePage(int, int);
+    BookDB(const std::string &dbFilePath);
     Book getBookById(int bookId);
+    std::map<int, Book> *getBooksList();
+    int addBookToDatabase(Book curBook);
+    ~BookDB();
+
+  private:
+    void createTable(const std::string &dbFilePath);
+    void executeInsertQuery(int randomId, Book curBook);
+    int generateUniqueId();
+    void changeLastePage(int, int);
     int generateRandomId();
     bool idExists(int id);
 };
