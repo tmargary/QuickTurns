@@ -1,8 +1,5 @@
-# Add the unit test executable
-add_executable(TestArchiveExtractor test.cpp)
+# Add the unit test source file
+target_sources(RunAllTests PRIVATE test.cpp)
 
-# Link against the module's source code and the GTest library
-target_link_libraries(TestArchiveExtractor ${GTEST_BOTH_LIBRARIES} ArchiveExtractor Util)
-
-# Add the test to the suite
-add_test(NAME TestArchiveExtractor COMMAND TestArchiveExtractor)
+# Link against the module's source code
+target_link_libraries(RunAllTests ArchiveExtractor Util)

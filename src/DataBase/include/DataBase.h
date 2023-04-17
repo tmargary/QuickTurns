@@ -12,6 +12,7 @@ struct Book
     std::string bookAuthorName;
     int bookYear{};
     int lastPage{};
+    Book() = default;
     Book(std::string path, std::string bName, std::string aName, int year, int lPage)
         : bookPath(path), bookName(bName), bookAuthorName(aName), bookYear(year), lastPage(lPage)
     {
@@ -31,13 +32,13 @@ class BookDB
     Book getBookById(int bookId);
     std::map<int, Book> *getBooksList();
     int addBookToDatabase(Book curBook);
+    void changeLastePage(int, int);
     ~BookDB();
 
   private:
     void createTable(const std::string &dbFilePath);
     void executeInsertQuery(int randomId, Book curBook);
     int generateUniqueId();
-    void changeLastePage(int, int);
     int generateRandomId();
     bool idExists(int id);
   

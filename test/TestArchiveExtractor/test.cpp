@@ -32,9 +32,3 @@ TEST(ArchiveExtractorTest, TestEpubExtractorFileCheckSum)
 
     ASSERT_EQ(checksum_result, CHECKSUM_FILE_EXPECTED);
 }
-
-int main(int argc, char **argv)
-{
-    ::testing::InitGoogleTest(&argc, argv);
-    return RUN_ALL_TESTS();
-}

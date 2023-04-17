@@ -2,6 +2,7 @@
 find_package(GTest REQUIRED)
 include_directories(${GTEST_INCLUDE_DIRS})
 
-# Add subdirectories for each module's tests
-add_subdirectory(TestDataBase)
-add_subdirectory(TestArchiveExtractor)
+find_package(Qt6 REQUIRED COMPONENTS Core Gui Widgets)
+
+# Add subdirectory for AllTests
+add_subdirectory(AllTests)
