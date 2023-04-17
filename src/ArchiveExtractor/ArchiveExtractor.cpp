@@ -3,7 +3,7 @@
 #include <string>
 #include <vector>
 
-#include "ArchiveExtractor/ArchiveExtractor.h"
+#include "ArchiveExtractor.h"
 
 using namespace libzippp;
 namespace fs = std::filesystem;

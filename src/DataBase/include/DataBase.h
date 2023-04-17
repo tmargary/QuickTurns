@@ -25,12 +25,6 @@ struct Book
 
 class BookDB
 {
-  private:
-    std::string bookDBTable;
-    sqlite3 *DB;
-    char *messaggeError;
-    int exit = 0;
-    sqlite3_stmt *stmt;
 
   public:
     BookDB(const std::string &dbFilePath);
@@ -46,4 +40,11 @@ class BookDB
     void changeLastePage(int, int);
     int generateRandomId();
     bool idExists(int id);
+  
+  private:
+    std::string bookDBTable;
+    sqlite3 *DB;
+    char *messaggeError;
+    int exit = 0;
+    sqlite3_stmt *stmt;
 };
