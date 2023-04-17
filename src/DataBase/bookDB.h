@@ -12,9 +12,13 @@ struct book
     int bookYear;
     int lastPage;
     book(std::string path, std::string bName, std::string aName, int year, int lPage)
-        : bookPath(path), bookName(bName), bookAuthorName(aName), bookYear(year), lastPage(lPage) {}
-    void print() {
-        std::cout << bookPath << " " << bookName << " " << bookAuthorName << " " << bookYear << " " << lastPage << " \n";
+        : bookPath(path), bookName(bName), bookAuthorName(aName), bookYear(year), lastPage(lPage)
+    {
+    }
+    void print()
+    {
+        std::cout << bookPath << " " << bookName << " " << bookAuthorName << " " << bookYear << " " << lastPage
+                  << " \n";
     }
 };
 
@@ -32,7 +36,6 @@ class bookDB
     bookDB();
     ~bookDB();
     void addBook(book);
-    std::map<int, book>* getData();
+    std::map<int, book> *getData();
     void changeLastePage(int, int);
-
 };

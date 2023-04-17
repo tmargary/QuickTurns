@@ -32,6 +32,6 @@
 *.app
 
 *.user
-*/build/*
-*/.vscode/*
+*build*
+*.vscode*
 /.cache
