@@ -10,8 +10,8 @@ struct Book
     std::string bookPath;
     std::string bookName;
     std::string bookAuthorName;
-    int bookYear;
-    int lastPage;
+    int bookYear{};
+    int lastPage{};
     Book(std::string path, std::string bName, std::string aName, int year, int lPage)
         : bookPath(path), bookName(bName), bookAuthorName(aName), bookYear(year), lastPage(lPage)
     {
@@ -29,14 +29,16 @@ class BookDB
     std::string bookDBTable;
     sqlite3 *DB;
     char *messaggeError;
-    static int ID;
     int exit = 0;
     sqlite3_stmt *stmt;
 
   public:
     BookDB(const std::string& dbFilePath);
     ~BookDB();
-    void addBook(Book);
+    int addBook(Book);
     std::map<int, Book> *getData();
     void changeLastePage(int, int);
+    Book getBookById(int bookId);
+    int generateRandomId();
+    bool idExists(int id);
 };

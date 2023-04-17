@@ -13,8 +13,8 @@ public:
     explicit HomeView(const QString &folderPath, QWidget *parent = nullptr);
     void setupListWidget();
     void setupAddFileButton();
-    void saveButtonConfig(const QString &filePath);
-    void loadButtonConfig();
+    int saveButtonConfig(const std::string &filePath);
+    void addBookToListWidget(const QString &bookName, const QString &bookPath);
 
 signals:
     void itemClicked(const QString &filePath);

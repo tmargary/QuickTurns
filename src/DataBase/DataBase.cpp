@@ -1,6 +1,11 @@
 #include "DataBase.h"
+#include <QRandomGenerator>
 
-int BookDB::ID = 0;
+int BookDB::generateRandomId()
+{
+    int randomId = QRandomGenerator::global()->bounded(1, 1000001);
+    return randomId;
+}
 
 BookDB::BookDB(const std::string& dbFilePath)
 {
@@ -20,29 +25,23 @@ BookDB::BookDB(const std::string& dbFilePath)
     }
     else
         std::cout << "Table created Successfully" << std::endl;
-
-    sqlite3_stmt *stmt;
-    bookDBTable = "SELECT COUNT(*) FROM BOOKS;";
-
-    int result = sqlite3_prepare_v2(DB, bookDBTable.c_str(), -1, &stmt, NULL);
-    if (result == SQLITE_OK)
-    {
-        result = sqlite3_step(stmt);
-        if (result == SQLITE_ROW)
-        {
-            BookDB::ID = sqlite3_column_int(stmt, 0);
-        }
-    }
-    sqlite3_finalize(stmt);
 }
 
-void BookDB::addBook(Book curBook)
+int BookDB::addBook(Book curBook)
 {
-    bookDBTable = "INSERT INTO BOOKS VALUES (" + std::to_string(ID) + ", '" + curBook.bookPath + "', '" +
+    int randomId = generateRandomId();
+
+    // Check if the generated ID exists in the database, generate a new one until it's unique
+    while (idExists(randomId))
+    {
+        randomId = generateRandomId();
+    }
+
+    bookDBTable = "INSERT INTO BOOKS VALUES (" + std::to_string(randomId) + ", '" + curBook.bookPath + "', '" +
                   curBook.bookName + "', '" + curBook.bookAuthorName + "', " + std::to_string(curBook.bookYear) + ", " +
                   std::to_string(curBook.lastPage) + ");";
     exit = sqlite3_exec(DB, bookDBTable.c_str(), NULL, 0, &messaggeError);
-    BookDB::ID++;
+
     if (exit != SQLITE_OK)
     {
         std::cerr << "Error Insert" << sqlite3_errmsg(DB) << std::endl;
@@ -50,7 +49,33 @@ void BookDB::addBook(Book curBook)
     }
     else
         std::cout << "Records created Successfully!" << std::endl;
+    return randomId;
 }
+
+bool BookDB::idExists(int id)
+{
+    bool exists = false;
+    const char *query = "SELECT id FROM BOOKS WHERE id = ?";
+    exit = sqlite3_prepare_v2(DB, query, -1, &stmt, NULL);
+
+    if (exit != SQLITE_OK)
+    {
+        std::cerr << "Error preparing statement: " << sqlite3_errmsg(DB) << std::endl;
+        sqlite3_close(DB);
+        return exists;
+    }
+
+    sqlite3_bind_int(stmt, 1, id);
+
+    if (sqlite3_step(stmt) == SQLITE_ROW)
+    {
+        exists = true;
+    }
+
+    sqlite3_finalize(stmt);
+    return exists;
+}
+
 
 std::map<int, Book> *BookDB::getData()
 {
@@ -108,6 +133,41 @@ void BookDB::changeLastePage(int id, int newPage)
 
     sqlite3_finalize(stmt);
 }
+
+Book BookDB::getBookById(int bookId)
+{
+    Book result("", "", "", 0, 0);
+    const char *query = "SELECT * FROM BOOKS WHERE id = ?";
+    exit = sqlite3_prepare_v2(DB, query, -1, &stmt, NULL);
+
+    if (exit != SQLITE_OK)
+    {
+        std::cerr << "Error preparing statement: " << sqlite3_errmsg(DB) << std::endl;
+        sqlite3_close(DB);
+        return result;
+    }
+
+    sqlite3_bind_int(stmt, 1, bookId); // Bind the randomId to the query
+
+    if (sqlite3_step(stmt) == SQLITE_ROW)
+    {
+        const char *bookPath = (const char *)sqlite3_column_text(stmt, 1);
+        const char *bookName = (const char *)sqlite3_column_text(stmt, 2);
+        const char *authorName = (const char *)sqlite3_column_text(stmt, 3);
+        int year = sqlite3_column_double(stmt, 4);
+        int lastPage = sqlite3_column_double(stmt, 5);
+
+        result = Book(bookPath, bookName, authorName, year, lastPage);
+    }
+    else
+    {
+        std::cerr << "Error retrieving data: " << sqlite3_errmsg(DB) << std::endl;
+    }
+
+    sqlite3_finalize(stmt);
+    return result;
+}
+
 
 BookDB::~BookDB()
 {

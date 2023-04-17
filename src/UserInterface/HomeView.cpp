@@ -20,6 +20,13 @@ HomeView::HomeView(const QString &folderPath, QWidget *parent)
     setupAddFileButton();
 }
 
+void HomeView::addBookToListWidget(const QString &bookName, const QString &bookPath)
+{
+    QListWidgetItem *newItem = new QListWidgetItem(bookName);
+    newItem->setData(Qt::UserRole, bookPath); // Store the bookPath in the item
+    listWidget->addItem(newItem);
+}
+
 void HomeView::setupAddFileButton()
 {
     QPushButton *addFileButton = new QPushButton("Add File");
@@ -39,11 +46,18 @@ void HomeView::setupAddFileButton()
                 QCoreApplication::applicationDirPath() + "/../test/data/" + QFileInfo(fileName).fileName();
             QFile::copy(fileName, destinationPath);
 
-            QListWidgetItem *newItem = new QListWidgetItem(destinationPath);
-            listWidget->addItem(newItem);
+            // Add the book to the database
+            int bookId = saveButtonConfig(destinationPath.toStdString());
+
+            // Get the bookName from the database
+            Book addedBook = database.getBookById(bookId);
+            QString bookName = QString::fromStdString(addedBook.bookName);
+
+            // Add the book to the list widget
+            addBookToListWidget(bookName, destinationPath);
 
             // Save the new item's file path to the configuration file
-            saveButtonConfig(destinationPath);
+            saveButtonConfig(destinationPath.toStdString());
         }
     });
 }
@@ -59,45 +73,24 @@ void HomeView::setupListWidget()
     {
         for (const auto &pair : *bookMap)
         {
-            QListWidgetItem *newItem = new QListWidgetItem(QString::fromStdString(pair.second.bookName));
-            listWidget->addItem(newItem);
+            QString bookName = QString::fromStdString(pair.second.bookName);
+            QString bookPath = QString::fromStdString(pair.second.bookPath);
+            addBookToListWidget(bookName, bookPath);
         }
         delete bookMap;
     }
 
-    QObject::connect(listWidget, &QListWidget::itemClicked,
-                     [=](QListWidgetItem *item) { emit itemClicked(item->text()); });
+    QObject::connect(listWidget, &QListWidget::itemClicked, [=](QListWidgetItem *item) {
+        QString bookPath = item->data(Qt::UserRole).toString(); // Retrieve the bookPath from the item
+        emit itemClicked(bookPath);
+    });
 }
 
-void HomeView::saveButtonConfig(const QString &filePath)
+int HomeView::saveButtonConfig(const std::string &filePath)
 {
-    QFile configFile(configFilePath);
-    if (configFile.open(QIODevice::Append | QIODevice::Text))
-    {
-        QTextStream out(&configFile);
-        out << filePath << "\n";
-        configFile.close();
-    }
-}
-
-void HomeView::loadButtonConfig()
-{
-    QFile configFile(configFilePath);
-    if (!configFile.open(QIODevice::ReadOnly))
-    {
-        return;
-    }
-
-    QTextStream stream(&configFile);
-    while (!stream.atEnd())
-    {
-        QString filePath = stream.readLine();
-
-        QListWidgetItem *newItem = new QListWidgetItem(filePath);
-        listWidget->addItem(newItem);
-    }
-
-    configFile.close();
+    Book girq(filePath, "bName", "aName", 1999, 0);
+    int bookId = database.addBook(girq);
+    return bookId;
 }
 
 #include "moc_HomeView.cpp"
