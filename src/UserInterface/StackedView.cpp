@@ -1,16 +1,16 @@
 #include "StackedView.h"
 
-StackedView::StackedView(QWidget *parent)
-    : QWidget(parent), homeView(new HomeView), readerView(new ReaderView), stackedWidget(new QStackedWidget),
-      homeButton(new QPushButton)
+StackedView::StackedView(const QString &folderPath, QWidget *parent)
+    : QWidget(parent), homeView(new HomeView(folderPath)), readerView(new ReaderView),
+      stackedWidget(new QStackedWidget), homeButton(new QPushButton)
 {
     showNormal();
 
     // Set the button icon and style
     homeButton->setText(QString::fromUtf8("\xF0\x9F\x8F\xA0 Home"));
     homeButton->setStyleSheet("QPushButton { background-color: #f7f7f7; border-radius: 8px; color: black; }"
-                          "QPushButton:hover { background-color: #e3e3e3; }"
-                          "QPushButton:pressed { background-color: #d1d1d1; }");
+                              "QPushButton:hover { background-color: #e3e3e3; }"
+                              "QPushButton:pressed { background-color: #d1d1d1; }");
     homeButton->setFixedHeight(30);
     stackedWidget->addWidget(homeView);
     stackedWidget->addWidget(readerView);
@@ -34,7 +34,6 @@ StackedView::StackedView(QWidget *parent)
         }
     });
 }
-
 
 void StackedView::switchToReaderView(const QString &filePath)
 {

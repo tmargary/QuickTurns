@@ -4,11 +4,13 @@
 #include <QHBoxLayout>
 #include <QWidget>
 
+#include "DataBase.h"
+
 class HomeView : public QWidget {
     Q_OBJECT
 
 public:
-    explicit HomeView(QWidget *parent = nullptr);
+    explicit HomeView(const QString &folderPath, QWidget *parent = nullptr);
     void setupListWidget();
     void setupAddFileButton();
     void saveButtonConfig(const QString &filePath);
@@ -21,4 +23,5 @@ private:
     QListWidget *listWidget;
     QVBoxLayout *layout;
     QString configFilePath;
+    BookDB database;
 };

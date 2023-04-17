@@ -1,8 +1,8 @@
-#include "bookDB.h"
+#include "DataBase.h"
 
-int bookDB::ID = 0;
+int BookDB::ID = 0;
 
-bookDB::bookDB()
+BookDB::BookDB(const std::string& dbFilePath)
 {
     bookDBTable = "CREATE TABLE IF NOT EXISTS BOOKS("
                   "ID INT PRIMARY KEY NOT NULL, "
@@ -11,7 +11,7 @@ bookDB::bookDB()
                   "AUTHORNAME   TEXT    NOT NULL, "
                   "YEAR         INT     NOT NULL, "
                   "LASTPAGE     INT             );";
-    exit = sqlite3_open("bookdb.db", &DB);
+    exit = sqlite3_open(dbFilePath.c_str(), &DB);
     exit = sqlite3_exec(DB, bookDBTable.c_str(), NULL, 0, &messaggeError);
     if (exit != SQLITE_OK)
     {
@@ -30,19 +30,19 @@ bookDB::bookDB()
         result = sqlite3_step(stmt);
         if (result == SQLITE_ROW)
         {
-            bookDB::ID = sqlite3_column_int(stmt, 0);
+            BookDB::ID = sqlite3_column_int(stmt, 0);
         }
     }
     sqlite3_finalize(stmt);
 }
 
-void bookDB::addBook(book curBook)
+void BookDB::addBook(Book curBook)
 {
     bookDBTable = "INSERT INTO BOOKS VALUES (" + std::to_string(ID) + ", '" + curBook.bookPath + "', '" +
                   curBook.bookName + "', '" + curBook.bookAuthorName + "', " + std::to_string(curBook.bookYear) + ", " +
                   std::to_string(curBook.lastPage) + ");";
     exit = sqlite3_exec(DB, bookDBTable.c_str(), NULL, 0, &messaggeError);
-    bookDB::ID++;
+    BookDB::ID++;
     if (exit != SQLITE_OK)
     {
         std::cerr << "Error Insert" << sqlite3_errmsg(DB) << std::endl;
@@ -52,9 +52,9 @@ void bookDB::addBook(book curBook)
         std::cout << "Records created Successfully!" << std::endl;
 }
 
-std::map<int, book> *bookDB::getData()
+std::map<int, Book> *BookDB::getData()
 {
-    std::map<int, book> *bookList = new std::map<int, book>();
+    std::map<int, Book> *bookList = new std::map<int, Book>();
     bookDBTable = "SELECT * FROM BOOKS";
     exit = sqlite3_prepare_v2(DB, bookDBTable.c_str(), -1, &stmt, NULL);
     if (exit != SQLITE_OK)
@@ -71,7 +71,7 @@ std::map<int, book> *bookDB::getData()
         const char *authorName = (const char *)sqlite3_column_text(stmt, 3);
         int year = sqlite3_column_double(stmt, 4);
         int lastPage = sqlite3_column_double(stmt, 5);
-        book tmp(bookPath, bookName, authorName, year, lastPage);
+        Book tmp(bookPath, bookName, authorName, year, lastPage);
         bookList->insert(std::make_pair(id, tmp));
     }
     if (exit != SQLITE_DONE)
@@ -83,7 +83,7 @@ std::map<int, book> *bookDB::getData()
     return bookList;
 }
 
-void bookDB::changeLastePage(int id, int newPage)
+void BookDB::changeLastePage(int id, int newPage)
 {
     bookDBTable = "UPDATE BOOKS SET LASTPAGE = ? WHERE id = ?";
 
@@ -109,7 +109,7 @@ void bookDB::changeLastePage(int id, int newPage)
     sqlite3_finalize(stmt);
 }
 
-bookDB::~bookDB()
+BookDB::~BookDB()
 {
     sqlite3_close(DB);
 }

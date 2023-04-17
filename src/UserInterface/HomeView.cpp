@@ -6,16 +6,15 @@
 #include <QtCore/QTextStream>
 #include <iostream>
 
+#include "DataBase.h"
 #include "HomeView.h"
 #include "ReaderView.h"
 
-HomeView::HomeView(QWidget *parent) : QWidget(parent)
+HomeView::HomeView(const QString &folderPath, QWidget *parent)
+    : QWidget(parent), database((folderPath + "/bookdb.db").toStdString())
 {
     layout = new QVBoxLayout(parent);
     this->setLayout(layout);
-
-    // Set the path to the configuration file
-    configFilePath = QCoreApplication::applicationDirPath() + "/config.txt";
 
     setupListWidget();
     setupAddFileButton();
@@ -54,8 +53,17 @@ void HomeView::setupListWidget()
     listWidget = new QListWidget;
     layout->addWidget(listWidget);
 
-    // Load the items from the configuration file
-    loadButtonConfig();
+    // Load the items from the database
+    std::map<int, Book> *bookMap = database.getData();
+    if (bookMap)
+    {
+        for (const auto &pair : *bookMap)
+        {
+            QListWidgetItem *newItem = new QListWidgetItem(QString::fromStdString(pair.second.bookName));
+            listWidget->addItem(newItem);
+        }
+        delete bookMap;
+    }
 
     QObject::connect(listWidget, &QListWidget::itemClicked,
                      [=](QListWidgetItem *item) { emit itemClicked(item->text()); });
