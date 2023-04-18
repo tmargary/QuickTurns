@@ -49,6 +49,57 @@ void HomeView::setButtonStyle(QPushButton *button)
                           "QPushButton:pressed { background-color: #d1d1d1; }");
 }
 
+Book HomeView::parseMetadataAndCheckDatabase(const QString &filePath)
+{
+    Book addedBookMeta = parseMetadata(filePath.toStdString());
+
+    if (database.bookExists(addedBookMeta))
+    {
+        qDebug() << "Book already exists in the database.";
+        return {};
+    }
+
+    return addedBookMeta;
+}
+
+bool HomeView::createDestinationDirectory(QDir &destinationDir, const fs::path &destinationPath)
+{
+    destinationDir = QFileInfo(destinationPath).dir();
+    if (!destinationDir.mkpath(destinationDir.path()))
+    {
+        qDebug() << "Failed to create directory" << destinationDir.path();
+        return false;
+    }
+
+    return true;
+}
+
+void HomeView::copyBookAndCover(const QString &filePath, const fs::path &destinationPath)
+{
+    QFile::copy(filePath, QString::fromStdString(destinationPath.string()));
+
+    std::unique_ptr<ArchiveExtractor> extractor = createExtractor(destinationPath, "");
+    fs::path sourcePath = fs::path(filePath.toStdString());
+    std::string cover;
+    std::vector<std::string> coverExtensions = {".png", ".jpg", ".jpeg", ".gif"};
+    for (const auto &ext : coverExtensions)
+    {
+        cover = "cover" + ext;
+        fs::path destinationCoverPath = destinationPath.parent_path() / fs::path(cover);
+        bool success = extractor->extractSpecificEntry(cover, destinationCoverPath);
+        if (success) {break;}
+    }
+}
+
+void HomeView::addBookToDatabaseAndListWidget(const Book &addedBookMeta, const fs::path &destinationPath)
+{
+    int bookId = database.addBookToDatabase(addedBookMeta);
+
+    QString bookName = QString::fromStdString(addedBookMeta.title.value_or(""));
+
+    addBookToListWidget(bookName, QString::fromStdString(destinationPath.string()));
+}
+
 void HomeView::handleButtonClick()
 {
     namespace fs = std::filesystem;
@@ -56,15 +107,8 @@ void HomeView::handleButtonClick()
 
     if (!filePath.isEmpty())
     {
-        // Parse metadata and store it in a Book object
-        Book addedBookMeta = parseMetadata(filePath.toStdString());
-
-        // Check if the book already exists in the database
-        if (database.bookExists(addedBookMeta))
-        {
-            qDebug() << "Book already exists in the database.";
-            return;
-        }
+        Book addedBookMeta = parseMetadataAndCheckDatabase(filePath);
+        if (!addedBookMeta.title) { return; }
 
         fs::path destinationPath = fs::path(m_folderPath) /
                                    fs::path(createUnderscoreName(addedBookMeta.author.value_or("unknown"))) /
@@ -72,34 +116,12 @@ void HomeView::handleButtonClick()
 
         addedBookMeta.bookPath = destinationPath.string();
 
-        QDir destinationDir = QFileInfo(destinationPath).dir();
-        if (!destinationDir.mkpath(destinationDir.path()))
-        {
-            qDebug() << "Failed to create directory" << destinationDir.path();
-        }
-        else
-        {
-            QFile::copy(filePath, QString::fromStdString(destinationPath.string()));
+        QDir destinationDir;
+        if (!createDestinationDirectory(destinationDir, destinationPath)) { return; }
 
-            // Copy cover image to destination folder
-            std::unique_ptr<ArchiveExtractor> extractor = createExtractor(destinationPath, "");
-            fs::path sourcePath = fs::path(filePath.toStdString());
-            std::string cover;
-            std::vector<std::string> coverExtensions = {".png", ".jpg", ".jpeg", ".gif"};
-            for (const auto &ext : coverExtensions)
-            {
-                cover = "cover" + ext;
-                fs::path destinationCoverPath = destinationPath.parent_path() / fs::path(cover);
-                bool success = extractor->extractSpecificEntry(cover, destinationCoverPath);
-                if (success) {break;}
-            }
-        }
+        copyBookAndCover(filePath, destinationPath);
 
-        int bookId = database.addBookToDatabase(addedBookMeta);
-
-        QString bookName = QString::fromStdString(addedBookMeta.title.value_or(""));
-
-        addBookToListWidget(bookName, QString::fromStdString(destinationPath.string()));
+        addBookToDatabaseAndListWidget(addedBookMeta, destinationPath);
     }
 }
 
