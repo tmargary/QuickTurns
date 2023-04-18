@@ -29,4 +29,4 @@ try:
     httpd.serve_forever()
     print(f"Serving on port {port} in directory {path}")
 except Exception as e:
-    print("Port 8000 already open.")
+    print(f"Port {port} already open.")

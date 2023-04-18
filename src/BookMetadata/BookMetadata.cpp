@@ -5,14 +5,13 @@
 #include <tinyxml2.h>
 #include <tuple>
 
-#include "BookMetadata.h"
 #include "ArchiveExtractor.h"
+#include "BookMetadata.h"
 
 Book::Builder Book::create()
 {
     return Builder();
 }
-
 
 std::string parseDate(const std::string &dateStr)
 {
@@ -34,6 +33,36 @@ std::string parseDate(const std::string &dateStr)
     return parsedDateStream.str();
 }
 
+std::vector<std::pair<const char *, std::function<void(const tinyxml2::XMLElement *)>>> getMetadataElements(
+    Book::Builder &builder)
+{
+    return {
+        {"dc:title", [&builder](const tinyxml2::XMLElement *e) { builder.setTitle(e->GetText() ? e->GetText() : ""); }},
+        {"dc:creator",
+         [&builder](const tinyxml2::XMLElement *e) {
+             builder.setAuthor(e->GetText() ? e->GetText() : "")
+                 .setAuthorFileAs(e->Attribute("opf:file-as") ? e->Attribute("opf:file-as") : "");
+         }},
+        {"dc:contributor",
+         [&builder](const tinyxml2::XMLElement *e) { builder.setContributor(e->GetText() ? e->GetText() : ""); }},
+        {"dc:publisher",
+         [&builder](const tinyxml2::XMLElement *e) { builder.setPublisher(e->GetText() ? e->GetText() : ""); }},
+        {"dc:identifier",
+         [&builder](const tinyxml2::XMLElement *e) { builder.setUuid(e->GetText() ? e->GetText() : ""); }},
+        {"dc:date",
+         [&builder](const tinyxml2::XMLElement *e) {
+             const std::string dateStr = e->GetText() ? e->GetText() : "";
+             std::string parsedDate = parseDate(dateStr);
+             builder.setDate(parsedDate);
+         }},
+        {"dc:rights",
+         [&builder](const tinyxml2::XMLElement *e) { builder.setRights(e->GetText() ? e->GetText() : ""); }},
+        {"dc:language",
+         [&builder](const tinyxml2::XMLElement *e) { builder.setLanguage(e->GetText() ? e->GetText() : ""); }},
+        {"dc:identifier[opf:scheme='ISBN']",
+         [&builder](const tinyxml2::XMLElement *e) { builder.setIsbn(e->GetText() ? e->GetText() : ""); }}};
+}
+
 Book parseMetadata(const std::string &filePath)
 {
     // Extract the epub archive
@@ -53,61 +82,14 @@ Book parseMetadata(const std::string &filePath)
 
     auto metadataElement = doc.FirstChildElement("package")->FirstChildElement("metadata");
 
-    // Extract book title
-    if (auto titleElement = metadataElement->FirstChildElement("dc:title"))
-    {
-        builder.setTitle(titleElement->GetText());
-    }
+    auto elements = getMetadataElements(builder);
 
-    // Extract author name
-    if (auto creatorElement = metadataElement->FirstChildElement("dc:creator"))
+    for (const auto &element : elements)
     {
-        builder.setAuthor(creatorElement->GetText())
-            .setAuthorFileAs(creatorElement->Attribute("opf:file-as"));
-    }
-
-    // Extract contributor
-    if (auto contributorElement = metadataElement->FirstChildElement("dc:contributor"))
-    {
-        builder.setContributor(contributorElement->GetText());
-    }
-
-    // Extract publisher
-    if (auto publisherElement = metadataElement->FirstChildElement("dc:publisher"))
-    {
-        builder.setPublisher(publisherElement->GetText());
-    }
-
-    // Extract UUID
-    if (auto uuidElement = metadataElement->FirstChildElement("dc:identifier"))
-    {
-        builder.setUuid(uuidElement->GetText());
-    }
-
-    // Extract date
-    if (auto dateElement = metadataElement->FirstChildElement("dc:date"))
-    {
-        const std::string dateStr = dateElement->GetText();
-        std::string parsedDate = parseDate(dateStr);
-        builder.setDate(parsedDate);
-    }
-
-    // Extract rights
-    if (auto rightsElement = metadataElement->FirstChildElement("dc:rights"))
-    {
-        builder.setRights(rightsElement->GetText());
-    }
-
-    // Extract language
-    if (auto languageElement = metadataElement->FirstChildElement("dc:language"))
-    {
-        builder.setLanguage(languageElement->GetText());
-    }
-
-    // Extract ISBN
-    if (auto isbnElement = metadataElement->FirstChildElement("dc:identifier[opf:scheme='ISBN']"))
-    {
-        builder.setIsbn(isbnElement->GetText());
+        if (auto elem = metadataElement->FirstChildElement(element.first))
+        {
+            element.second(elem);
+        }
     }
 
     // Set remaining fields

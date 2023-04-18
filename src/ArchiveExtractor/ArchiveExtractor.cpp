@@ -50,7 +50,8 @@ std::string EpubExtractor::readSpecificEntry(const std::string& entryName)
 {
     const std::vector<ZipEntry> entries = readEntries(source);
     auto it = std::find_if(entries.begin(), entries.end(), [&entryName](const ZipEntry& entry) {
-        return entry.getName() == entryName;
+        std::string currentEntryName = entry.getName();
+        return currentEntryName.rfind(entryName) == (currentEntryName.size() - entryName.size());
     });
 
     if (it != entries.end())
