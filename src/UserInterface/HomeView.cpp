@@ -59,9 +59,17 @@ void HomeView::handleButtonClick()
         // Parse metadata and store it in a Book object
         Book addedBookMeta = parseMetadata(filePath.toStdString());
 
+        // Check if the book already exists in the database
+        if (database.bookExists(addedBookMeta)) {
+            qDebug() << "Book already exists in the database.";
+            return;
+        }
+
         fs::path destinationPath = fs::path(m_folderPath) /
                                    fs::path(createUnderscoreName(addedBookMeta.author.value_or("unknown"))) /
                                    fs::path("sample.epub");
+
+        addedBookMeta.bookPath = destinationPath.string();
 
         QDir destinationDir = QFileInfo(destinationPath).dir();
         if (!destinationDir.mkpath(destinationDir.path()))
@@ -80,6 +88,7 @@ void HomeView::handleButtonClick()
         addBookToListWidget(bookName, QString::fromStdString(destinationPath.string()));
     }
 }
+
 
 void HomeView::setupListWidget()
 {

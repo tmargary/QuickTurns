@@ -92,8 +92,5 @@ Book parseMetadata(const std::string &filePath)
         }
     }
 
-    // Set remaining fields
-    builder.setBookPath(filePath);
-
     return builder.build();
 }

@@ -18,6 +18,7 @@ public:
 private:
     void setButtonStyle(QPushButton *button);
     QString createDestinationPath(const QString &fileName);
+    bool bookExists(const Book &bookToCheck);
     void handleButtonClick();
 
 signals:

@@ -1,6 +1,5 @@
-#include <string>
 #include <algorithm>
-
+#include <string>
 
 std::string createUnderscoreName(const std::string &input)
 {
@@ -11,9 +10,9 @@ std::string createUnderscoreName(const std::string &input)
         {                              // only keep letters and digits
             output += std::tolower(c); // convert to lowercase
         }
-        else
+        else if (output.empty() || output.back() != '_')
         {
-            output += '_'; // replace non-alphanumeric characters with underscores
+            output += '_'; // replace non-alphanumeric characters with a single underscore
         }
     }
     // remove any trailing underscores

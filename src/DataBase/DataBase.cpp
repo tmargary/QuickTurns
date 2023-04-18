@@ -39,7 +39,7 @@ void BookDB::createTable(const std::string &dbFilePath)
         std::cout << "Table created Successfully" << std::endl;
 }
 
-int BookDB::addBookToDatabase(const Book& curBook)
+int BookDB::addBookToDatabase(const Book &curBook)
 {
     int randomId = generateUniqueId();
 
@@ -167,6 +167,23 @@ std::map<int, Book> *BookDB::getBooksList()
     return bookList;
 }
 
+bool BookDB::bookExists(const Book &bookToCheck)
+{
+    // Use the getBooksList() function to fetch the books
+    std::map<int, Book> *existingBooks = getBooksList();
+
+    for (const auto &[id, existingBook] : *existingBooks)
+    {
+        // Modify the condition based on your metadata comparison criteria
+        if (bookToCheck.title == existingBook.title &&
+            bookToCheck.author == existingBook.author)
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
 void BookDB::changeLastePage(int id, int newPage)
 {
     bookDBTable = "UPDATE BOOKS SET LASTPAGE = ? WHERE id = ?";
@@ -217,11 +234,11 @@ Book BookDB::getBookById(int bookId)
         int lastPage = sqlite3_column_double(stmt, 5);
 
         builder.setBookPath(bookPath)
-                       .setBookPath(bookPath)
-                       .setTitle(bookName)
-                       .setAuthor(authorName)
-                       .setDate(year)
-                       .setLastPage(lastPage);
+            .setBookPath(bookPath)
+            .setTitle(bookName)
+            .setAuthor(authorName)
+            .setDate(year)
+            .setLastPage(lastPage);
         // Add more setters for the remaining fields
     }
     else
@@ -232,7 +249,6 @@ Book BookDB::getBookById(int bookId)
     sqlite3_finalize(stmt);
     return builder.build();
 }
-
 
 BookDB::~BookDB()
 {
