@@ -1,9 +1,10 @@
 #include <QCoreApplication>
 #include <QFileDialog>
 #include <QHBoxLayout>
-#include <QListWidget>
-#include <QListWidgetItem>
+#include <QTableWidget>
+#include <QTableWidgetItem>
 #include <QtCore/QTextStream>
+#include <QHeaderView>
 #include <iostream>
 
 #include "ArchiveExtractor.h"
@@ -20,16 +21,26 @@ HomeView::HomeView(const QString &folderPath, QWidget *parent)
     layout = new QVBoxLayout(parent);
     this->setLayout(layout);
 
-    setupListWidget();
+    setupTableWidget();
     setupAddFileButton();
 }
 
-void HomeView::addBookToListWidget(const QString &bookName, const QString &bookPath)
+void HomeView::addBookToTableWidget(const QString &bookName, const QString &bookAuthor, const QString &bookDate, const QString &bookPath)
 {
-    QListWidgetItem *newItem = new QListWidgetItem(bookName);
-    newItem->setData(Qt::UserRole, bookPath); // Store the bookPath in the item
-    listWidget->addItem(newItem);
+    int row = tableWidget->rowCount();
+    tableWidget->insertRow(row);
+
+    QTableWidgetItem *nameItem = new QTableWidgetItem(bookName);
+    nameItem->setData(Qt::UserRole, bookPath); // Store the bookPath in the item
+    tableWidget->setItem(row, 0, nameItem);
+
+    QTableWidgetItem *authorItem = new QTableWidgetItem(bookAuthor);
+    tableWidget->setItem(row, 1, authorItem);
+
+    QTableWidgetItem *dateItem = new QTableWidgetItem(bookDate);
+    tableWidget->setItem(row, 2, dateItem);
 }
+
 
 void HomeView::setupAddFileButton()
 {
@@ -87,28 +98,35 @@ void HomeView::copyBookAndCover(const QString &filePath, const fs::path &destina
         cover = "cover" + ext;
         fs::path destinationCoverPath = destinationPath.parent_path() / fs::path(cover);
         bool success = extractor->extractSpecificEntry(cover, destinationCoverPath);
-        if (success) {break;}
+        if (success)
+        {
+            break;
+        }
     }
 }
 
-void HomeView::addBookToDatabaseAndListWidget(const Book &addedBookMeta, const fs::path &destinationPath)
+void HomeView::addBookToDatabaseAndTableWidget(const Book &addedBookMeta, const fs::path &destinationPath)
 {
     int bookId = database.addBookToDatabase(addedBookMeta);
-
     QString bookName = QString::fromStdString(addedBookMeta.title.value_or(""));
+    QString bookAuthor = QString::fromStdString(addedBookMeta.author.value_or(""));
+    QString bookDate = QString::fromStdString(addedBookMeta.date.value_or(""));
 
-    addBookToListWidget(bookName, QString::fromStdString(destinationPath.string()));
+    addBookToTableWidget(bookName, bookAuthor, bookDate, QString::fromStdString(destinationPath.string()));
 }
+
 
 void HomeView::handleButtonClick()
 {
     namespace fs = std::filesystem;
     const QString filePath = QFileDialog::getOpenFileName(nullptr, "Open File", QDir::homePath());
-
     if (!filePath.isEmpty())
     {
         Book addedBookMeta = parseMetadataAndCheckDatabase(filePath);
-        if (!addedBookMeta.title) { return; }
+        if (!addedBookMeta.title)
+        {
+            return;
+        }
 
         fs::path destinationPath = fs::path(m_folderPath) /
                                    fs::path(createUnderscoreName(addedBookMeta.author.value_or("unknown"))) /
@@ -117,19 +135,24 @@ void HomeView::handleButtonClick()
         addedBookMeta.bookPath = destinationPath.string();
 
         QDir destinationDir;
-        if (!createDestinationDirectory(destinationDir, destinationPath)) { return; }
+        if (!createDestinationDirectory(destinationDir, destinationPath))
+        {
+            return;
+        }
 
         copyBookAndCover(filePath, destinationPath);
 
-        addBookToDatabaseAndListWidget(addedBookMeta, destinationPath);
+        addBookToDatabaseAndTableWidget(addedBookMeta, destinationPath);
     }
 }
 
-void HomeView::setupListWidget()
+void HomeView::setupTableWidget()
 {
-    listWidget = new QListWidget;
-    layout->addWidget(listWidget);
-
+    tableWidget = new QTableWidget;
+    tableWidget->setColumnCount(3); // Set the number of columns to 3
+    tableWidget->setHorizontalHeaderLabels(QStringList() << "Book Name" << "Author" << "Date"); // Add column headers
+    tableWidget->horizontalHeader()->setStretchLastSection(true);
+    layout->addWidget(tableWidget);
     // Load the items from the database
     std::map<int, Book> *bookMap = database.getBooksList();
     if (bookMap)
@@ -137,16 +160,19 @@ void HomeView::setupListWidget()
         for (const auto &pair : *bookMap)
         {
             QString bookName = QString::fromStdString(pair.second.title.value_or(""));
+            QString bookAuthor = QString::fromStdString(pair.second.author.value_or(""));
+            QString bookDate = QString::fromStdString(pair.second.date.value_or(""));
             QString bookPath = QString::fromStdString(pair.second.bookPath);
-            addBookToListWidget(bookName, bookPath);
+            addBookToTableWidget(bookName, bookAuthor, bookDate, bookPath); // Add the author name and date to the table widget
         }
         delete bookMap;
     }
 
-    QObject::connect(listWidget, &QListWidget::itemClicked, [=](QListWidgetItem *item) {
+    QObject::connect(tableWidget, &QTableWidget::itemClicked, [=](QTableWidgetItem *item) {
         QString bookPath = item->data(Qt::UserRole).toString(); // Retrieve the bookPath from the item
         emit itemClicked(bookPath);
     });
 }
+
 
 #include "moc_HomeView.cpp"
