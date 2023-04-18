@@ -6,12 +6,15 @@
 #include <QtCore/QTextStream>
 #include <iostream>
 
+#include "BookMetadata.h"
+#include "ArchiveExtractor.h"
 #include "DataBase.h"
 #include "HomeView.h"
 #include "ReaderView.h"
 
 HomeView::HomeView(const QString &folderPath, QWidget *parent)
-    : QWidget(parent), database((folderPath + "/bookdb.db").toStdString())
+    : QWidget(parent), m_folderPath(folderPath), database((m_folderPath + "/bookdb.db").toStdString())
+
 {
     layout = new QVBoxLayout(parent);
     this->setLayout(layout);
@@ -30,36 +33,49 @@ void HomeView::addBookToListWidget(const QString &bookName, const QString &bookP
 void HomeView::setupAddFileButton()
 {
     QPushButton *addFileButton = new QPushButton("Add File");
-    addFileButton->setStyleSheet("QPushButton { background-color: #f7f7f7; border-radius: 8px; color: black; }"
-                                 "QPushButton:hover { background-color: #e3e3e3; }"
-                                 "QPushButton:pressed { background-color: #d1d1d1; }");
+    setButtonStyle(addFileButton);
     addFileButton->setFixedHeight(30);
 
     layout->addWidget(addFileButton);
 
-    QObject::connect(addFileButton, &QPushButton::clicked, [=]() {
-        const QString fileName = QFileDialog::getOpenFileName(nullptr, "Open File", QDir::homePath());
-        if (!fileName.isEmpty())
-        {
-            // Copy the file to a directory
-            QString destinationPath =
-                QCoreApplication::applicationDirPath() + "/../test/data/" + QFileInfo(fileName).fileName();
-            QFile::copy(fileName, destinationPath);
+    QObject::connect(addFileButton, &QPushButton::clicked, [=]() { handleButtonClick(); });
+}
 
-            // Add the book to the database
-            int bookId = saveButtonConfig(destinationPath.toStdString());
+void HomeView::setButtonStyle(QPushButton *button)
+{
+    button->setStyleSheet("QPushButton { background-color: #f7f7f7; border-radius: 8px; color: black; }"
+                          "QPushButton:hover { background-color: #e3e3e3; }"
+                          "QPushButton:pressed { background-color: #d1d1d1; }");
+}
 
-            // Get the bookName from the database
-            Book addedBook = database.getBookById(bookId);
-            QString bookName = QString::fromStdString(addedBook.bookName);
+QString HomeView::createDestinationPath(const QString &fileName)
+{
+    return QCoreApplication::applicationDirPath() + "/../test/data/" + QFileInfo(fileName).fileName();
+}
 
-            // Add the book to the list widget
-            addBookToListWidget(bookName, destinationPath);
+void HomeView::handleButtonClick()
+{
+    const QString fileName = QFileDialog::getOpenFileName(nullptr, "Open File", QDir::homePath());
 
-            // Save the new item's file path to the configuration file
-            saveButtonConfig(destinationPath.toStdString());
-        }
-    });
+    // Extract the epub archive
+    std::unique_ptr<ArchiveExtractor> extractor = createExtractor(fileName.toStdString());
+    const std::string xmlContent = extractor->readSpecificEntry("content.opf");
+    BookMetadata bookMeta = parseMetadata(xmlContent); 
+
+    if (!fileName.isEmpty())
+    {
+        QString destinationPath = createDestinationPath(fileName);
+        QFile::copy(fileName, destinationPath);
+
+        int bookId = addBookToDatabase(destinationPath.toStdString());
+
+        Book addedBook = database.getBookById(bookId);
+        QString bookName = QString::fromStdString(addedBook.bookName);
+
+        addBookToListWidget(bookName, destinationPath);
+
+        addBookToDatabase(destinationPath.toStdString());
+    }
 }
 
 void HomeView::setupListWidget()
@@ -86,7 +102,7 @@ void HomeView::setupListWidget()
     });
 }
 
-int HomeView::saveButtonConfig(const std::string &filePath)
+int HomeView::addBookToDatabase(const std::string &filePath)
 {
     Book girq(filePath, "bName", "aName", 1999, 0);
     int bookId = database.addBookToDatabase(girq);

@@ -1,5 +1,6 @@
 add_subdirectory(ArchiveExtractor)
 add_subdirectory(UserInterface)
+add_subdirectory(BookMetadata)
 add_subdirectory(DataBase)
 add_subdirectory(Util)
 

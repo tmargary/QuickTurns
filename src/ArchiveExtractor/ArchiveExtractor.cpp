@@ -2,6 +2,8 @@
 #include <fstream>
 #include <string>
 #include <vector>
+#include <algorithm>
+#include <stdexcept>
 
 #include "ArchiveExtractor.h"
 
@@ -27,7 +29,6 @@ void EpubExtractor::extract()
     const std::vector<ZipEntry> entries = readEntries(source);
     for (const auto &entry : entries)
     {
-        // ZipEntry entry = *ittr;
         const fs::path name = entry.getName();
         const std::string textData = entry.readAsText();
         const fs::path output_file = output_dir / name;
@@ -43,4 +44,19 @@ std::unique_ptr<ArchiveExtractor> createExtractor(const fs::path &source, const 
         return std::make_unique<EpubExtractor>(source, destinationDir);
     }
     throw std::runtime_error("Unsupported file format.");
+}
+
+std::string EpubExtractor::readSpecificEntry(const std::string& entryName)
+{
+    const std::vector<ZipEntry> entries = readEntries(source);
+    auto it = std::find_if(entries.begin(), entries.end(), [&entryName](const ZipEntry& entry) {
+        return entry.getName() == entryName;
+    });
+
+    if (it != entries.end())
+    {
+        return it->readAsText();
+    }
+
+    throw std::runtime_error("Entry not found.");
 }
