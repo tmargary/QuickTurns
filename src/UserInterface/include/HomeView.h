@@ -27,6 +27,6 @@ signals:
 private:
     QListWidget *listWidget;
     QVBoxLayout *layout;
-    QString m_folderPath;
+    std::string m_folderPath;
     BookDB database;
 };

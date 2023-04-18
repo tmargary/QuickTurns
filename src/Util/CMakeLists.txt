@@ -1,4 +1,4 @@
-add_library(Util STATIC Checksum.cpp)
+add_library(Util STATIC Checksum.cpp StringOp.cpp)
 target_include_directories(Util PUBLIC include)
 
 find_package(OpenSSL REQUIRED)

@@ -1,4 +1,4 @@
-add_library(ArchiveExtractor ArchiveExtractor.cpp)
+add_library(ArchiveExtractor STATIC ArchiveExtractor.cpp)
 target_include_directories(ArchiveExtractor PUBLIC include)
 
 find_package(libzip CONFIG REQUIRED)

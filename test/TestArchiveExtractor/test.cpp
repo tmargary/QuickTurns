@@ -1,7 +1,7 @@
-#include "../../src/ArchiveExtractor/include/ArchiveExtractor.h"
+#include "ArchiveExtractor.h"
 
 #include "test.h"
-#include "Util/Checksum.h"
+#include "Checksum.h"
 #include <gtest/gtest.h>
 
 using namespace TestConstants;

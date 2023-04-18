@@ -19,4 +19,5 @@ target_link_libraries(UserInterface PRIVATE
     Qt6::WebEngineWidgets 
     ArchiveExtractor 
     BookMetadata
+    Util
     )
