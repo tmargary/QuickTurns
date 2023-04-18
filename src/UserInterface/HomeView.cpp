@@ -39,7 +39,6 @@ void HomeView::addBookToTableWidget(const QString &bookName, const QString &book
     tableWidget->setItem(row, 2, dateItem);
 }
 
-
 void HomeView::setupAddFileButton()
 {
     QPushButton *addFileButton = new QPushButton("Add File");
@@ -151,6 +150,8 @@ void HomeView::setupTableWidget()
                                                          << "Author"
                                                          << "Date"); // Add column headers
     tableWidget->horizontalHeader()->setStretchLastSection(true);
+    tableWidget->setColumnWidth(0, tableWidget->width() *
+                                       0.5); // Set the width of the "Book Name" column to 50% of the total width
     layout->addWidget(tableWidget);
     // Load the items from the database
     std::map<int, Book> *bookMap = database.getBooksList();
