@@ -2,6 +2,7 @@
 #include <QDir>
 #include <QHBoxLayout>
 #include <QPushButton>
+#include <QLabel>
 #include <QTableWidget>
 
 #include "DataBase.h"
@@ -19,7 +20,8 @@ class HomeView : public QWidget
     void addBookToTableWidget(const QString &bookName, const QString &bookAuthor, const QString &bookDate,
                               const QString &bookPath);
 
-        private : void setButtonStyle(QPushButton *button);
+  private:
+    void setButtonStyle(QPushButton *button);
     QString createDestinationPath(const QString &fileName);
     bool bookExists(const Book &bookToCheck);
     void handleButtonClick();
@@ -28,12 +30,21 @@ class HomeView : public QWidget
     void copyBookAndCover(const QString &filePath, const fs::path &destinationPath);
     void addBookToDatabaseAndTableWidget(const Book &addedBookMeta, const fs::path &destinationPath);
 
+  private:
+    void updateMetadataLabel(const Book &book);
+    void updateCoverLabel(const fs::path &bookPath);
+    void updateMetadataAndCoverLabels(const QString &bookPath);
+    
+
   signals:
     void itemClicked(const QString &filePath);
 
   private:
+    QLabel *coverLabel;
+    QPushButton *addFileButton;
+    QLabel *metadataLabel;
     QTableWidget *tableWidget;
-    QVBoxLayout *layout;
+    QVBoxLayout *mainLayout;
     std::string m_folderPath;
     BookDB database;
 };

@@ -144,7 +144,7 @@ std::map<int, Book> *BookDB::getBooksList()
         const char *bookPath = (const char *)sqlite3_column_text(stmt, 1);
         const char *bookName = (const char *)sqlite3_column_text(stmt, 2);
         const char *authorName = (const char *)sqlite3_column_text(stmt, 3);
-        const char *year = (const char *)sqlite3_column_text(stmt, 4);
+        const char *year = (const char *)sqlite3_column_text(stmt, 8);
         int lastPage = static_cast<int>(sqlite3_column_double(stmt, 5));
 
         Book tmp = Book::create()
@@ -249,6 +249,60 @@ Book BookDB::getBookById(int bookId)
     sqlite3_finalize(stmt);
     return builder.build();
 }
+
+Book BookDB::getBookByPath(const std::string &bookPath)
+{
+    Book::Builder builder;
+    const char *query = "SELECT * FROM BOOKS WHERE BOOKPATH = ?";
+    exit = sqlite3_prepare_v2(DB, query, -1, &stmt, NULL);
+
+    if (exit != SQLITE_OK)
+    {
+        std::cerr << "Error preparing statement: " << sqlite3_errmsg(DB) << std::endl;
+        sqlite3_close(DB);
+        return builder.build();
+    }
+
+    sqlite3_bind_text(stmt, 1, bookPath.c_str(), -1, SQLITE_TRANSIENT);
+
+    if (sqlite3_step(stmt) == SQLITE_ROW)
+    {
+        const char *bookPath = (const char *)sqlite3_column_text(stmt, 1);
+        const char *bookName = (const char *)sqlite3_column_text(stmt, 2);
+        const char *authorName = (const char *)sqlite3_column_text(stmt, 3);
+        const char *authorFileAs = (const char *)sqlite3_column_text(stmt, 4);
+        const char *contributor = (const char *)sqlite3_column_text(stmt, 5);
+        const char *publisher = (const char *)sqlite3_column_text(stmt, 6);
+        const char *uuid = (const char *)sqlite3_column_text(stmt, 7);
+        const char *date = (const char *)sqlite3_column_text(stmt, 8);
+        const char *rights = (const char *)sqlite3_column_text(stmt, 9);
+        const char *language = (const char *)sqlite3_column_text(stmt, 10);
+        const char *isbn = (const char *)sqlite3_column_text(stmt, 11);
+        int lastPage = sqlite3_column_int(stmt, 12);
+
+        builder.setBookPath(bookPath)
+            .setTitle(bookName)
+            .setAuthor(authorName)
+            .setAuthorFileAs(authorFileAs)
+            .setContributor(contributor)
+            .setPublisher(publisher)
+            .setUuid(uuid)
+            .setDate(date)
+            .setRights(rights)
+            .setLanguage(language)
+            .setIsbn(isbn)
+            .setLastPage(lastPage);
+        // Add more setters for the remaining fields
+    }
+    else
+    {
+        std::cerr << "Error retrieving data: " << sqlite3_errmsg(DB) << std::endl;
+    }
+
+    sqlite3_finalize(stmt);
+    return builder.build();
+}
+
 
 BookDB::~BookDB()
 {
