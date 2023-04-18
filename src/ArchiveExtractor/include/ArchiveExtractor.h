@@ -2,9 +2,9 @@
 
 #include "libzippp.h"
 #include <filesystem>
+#include <iostream>
 #include <memory>
 #include <string>
-#include <iostream>
 
 using namespace libzippp;
 namespace fs = std::filesystem;
@@ -14,7 +14,8 @@ class ArchiveExtractor
   public:
     virtual std::vector<ZipEntry> readEntries(const fs::path &source) = 0;
     virtual void writeEntry(const fs::path &output_dir, const std::string &textData) = 0;
-    virtual std::string readSpecificEntry(const std::string& entryName) = 0;
+    virtual std::string readSpecificEntry(const std::string &entryName) = 0;
+    virtual bool extractSpecificEntry(const std::string &entryName, const fs::path &output_file) = 0;
     virtual void extract() = 0;
     virtual ~ArchiveExtractor() = default;
 };
@@ -34,7 +35,8 @@ class EpubExtractor : public ArchiveExtractor
 
     std::vector<ZipEntry> readEntries(const fs::path &source) override;
     void writeEntry(const fs::path &output_dir, const std::string &textData) override;
-    std::string readSpecificEntry(const std::string& entryName) override;
+    std::string readSpecificEntry(const std::string &entryName) override;
+    bool extractSpecificEntry(const std::string &entryName, const fs::path &output_file) override;
     void extract() override;
 
   private:

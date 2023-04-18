@@ -80,6 +80,13 @@ Book parseMetadata(const std::string &filePath)
 
     Book::Builder builder;
 
+    if (xmlContent == "")
+    {
+        std::filesystem::path path(filePath);
+        builder.setTitle(path.filename());
+        return builder.build();
+    }
+
     auto metadataElement = doc.FirstChildElement("package")->FirstChildElement("metadata");
 
     auto elements = getMetadataElements(builder);

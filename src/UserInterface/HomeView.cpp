@@ -60,7 +60,8 @@ void HomeView::handleButtonClick()
         Book addedBookMeta = parseMetadata(filePath.toStdString());
 
         // Check if the book already exists in the database
-        if (database.bookExists(addedBookMeta)) {
+        if (database.bookExists(addedBookMeta))
+        {
             qDebug() << "Book already exists in the database.";
             return;
         }
@@ -79,6 +80,19 @@ void HomeView::handleButtonClick()
         else
         {
             QFile::copy(filePath, QString::fromStdString(destinationPath.string()));
+
+            // Copy cover image to destination folder
+            std::unique_ptr<ArchiveExtractor> extractor = createExtractor(destinationPath, "");
+            fs::path sourcePath = fs::path(filePath.toStdString());
+            std::string cover;
+            std::vector<std::string> coverExtensions = {".png", ".jpg", ".jpeg", ".gif"};
+            for (const auto &ext : coverExtensions)
+            {
+                cover = "cover" + ext;
+                fs::path destinationCoverPath = destinationPath.parent_path() / fs::path(cover);
+                bool success = extractor->extractSpecificEntry(cover, destinationCoverPath);
+                if (success) {break;}
+            }
         }
 
         int bookId = database.addBookToDatabase(addedBookMeta);
@@ -88,7 +102,6 @@ void HomeView::handleButtonClick()
         addBookToListWidget(bookName, QString::fromStdString(destinationPath.string()));
     }
 }
-
 
 void HomeView::setupListWidget()
 {
