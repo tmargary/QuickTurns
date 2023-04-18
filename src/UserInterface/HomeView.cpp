@@ -48,33 +48,25 @@ void HomeView::setButtonStyle(QPushButton *button)
                           "QPushButton:pressed { background-color: #d1d1d1; }");
 }
 
-QString HomeView::createDestinationPath(const QString &fileName)
-{
-    return QCoreApplication::applicationDirPath() + "/../test/data/" + QFileInfo(fileName).fileName();
-}
-
 void HomeView::handleButtonClick()
 {
-    const QString fileName = QFileDialog::getOpenFileName(nullptr, "Open File", QDir::homePath());
+    const QString filePath = QFileDialog::getOpenFileName(nullptr, "Open File", QDir::homePath());
 
-    // Extract the epub archive
-    std::unique_ptr<ArchiveExtractor> extractor = createExtractor(fileName.toStdString());
-    const std::string xmlContent = extractor->readSpecificEntry("content.opf");
-    BookMetadata bookMeta = parseMetadata(xmlContent); 
-
-    if (!fileName.isEmpty())
+    if (!filePath.isEmpty())
     {
-        QString destinationPath = createDestinationPath(fileName);
-        QFile::copy(fileName, destinationPath);
+        QString destinationPath = filePath;
+        QFile::copy(filePath, destinationPath);
+
+        // Parse metadata and store it in a Book object
+        Book addedBook = parseMetadata(destinationPath.toStdString());
+
+        addedBook.bookPath = destinationPath.toStdString();
 
         int bookId = addBookToDatabase(destinationPath.toStdString());
 
-        Book addedBook = database.getBookById(bookId);
-        QString bookName = QString::fromStdString(addedBook.bookName);
+        QString bookName = QString::fromStdString(addedBook.title.value_or(""));
 
         addBookToListWidget(bookName, destinationPath);
-
-        addBookToDatabase(destinationPath.toStdString());
     }
 }
 
@@ -89,7 +81,7 @@ void HomeView::setupListWidget()
     {
         for (const auto &pair : *bookMap)
         {
-            QString bookName = QString::fromStdString(pair.second.bookName);
+            QString bookName = QString::fromStdString(pair.second.title.value_or(""));
             QString bookPath = QString::fromStdString(pair.second.bookPath);
             addBookToListWidget(bookName, bookPath);
         }
@@ -104,9 +96,17 @@ void HomeView::setupListWidget()
 
 int HomeView::addBookToDatabase(const std::string &filePath)
 {
-    Book girq(filePath, "bName", "aName", 1999, 0);
-    int bookId = database.addBookToDatabase(girq);
+    Book::Builder builder = Book::create();
+    builder.setBookPath(filePath)
+           .setTitle("bName")
+           .setAuthor("aName")
+           .setLastPage(0)
+           .setDate("1999");
+
+    Book book = builder.build();
+    int bookId = database.addBookToDatabase(book);
     return bookId;
 }
+
 
 #include "moc_HomeView.cpp"
