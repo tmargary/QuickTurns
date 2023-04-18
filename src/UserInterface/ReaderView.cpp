@@ -53,4 +53,9 @@ void ReaderView::loadFile(const QString &filePath)
     webView->setUrl(QUrl(QStringLiteral("qrc:/Styles/continuous-spreads.html?url=%1").arg(bookPath.toString())));
 }
 
+ReaderView::~ReaderView()
+{
+    delete webView->page();
+}
+
 #include "moc_ReaderView.cpp"

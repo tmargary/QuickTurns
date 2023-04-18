@@ -14,7 +14,7 @@ class BookDB
     BookDB(const std::string &dbFilePath);
     Book getBookById(int bookId);
     std::map<int, Book> *getBooksList();
-    int addBookToDatabase(Book curBook);
+    int addBookToDatabase(const Book& curBook);
     void changeLastePage(int, int);
     ~BookDB();
 

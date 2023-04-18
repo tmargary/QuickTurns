@@ -57,10 +57,10 @@ void HomeView::handleButtonClick()
     if (!filePath.isEmpty())
     {
         // Parse metadata and store it in a Book object
-        Book addedBook = parseMetadata(filePath.toStdString());
+        Book addedBookMeta = parseMetadata(filePath.toStdString());
 
         fs::path destinationPath = fs::path(m_folderPath) /
-                                   fs::path(createUnderscoreName(addedBook.author.value_or("unknown"))) /
+                                   fs::path(createUnderscoreName(addedBookMeta.author.value_or("unknown"))) /
                                    fs::path("sample.epub");
 
         QDir destinationDir = QFileInfo(destinationPath).dir();
@@ -73,11 +73,9 @@ void HomeView::handleButtonClick()
             QFile::copy(filePath, QString::fromStdString(destinationPath.string()));
         }
 
-        addedBook.bookPath = destinationPath.string();
+        int bookId = database.addBookToDatabase(addedBookMeta);
 
-        int bookId = addBookToDatabase(destinationPath.string());
-
-        QString bookName = QString::fromStdString(addedBook.title.value_or(""));
+        QString bookName = QString::fromStdString(addedBookMeta.title.value_or(""));
 
         addBookToListWidget(bookName, QString::fromStdString(destinationPath.string()));
     }
@@ -105,16 +103,6 @@ void HomeView::setupListWidget()
         QString bookPath = item->data(Qt::UserRole).toString(); // Retrieve the bookPath from the item
         emit itemClicked(bookPath);
     });
-}
-
-int HomeView::addBookToDatabase(const std::string &filePath)
-{
-    Book::Builder builder = Book::create();
-    builder.setBookPath(filePath).setTitle("bName").setAuthor("aName").setLastPage(0).setDate("1999");
-
-    Book book = builder.build();
-    int bookId = database.addBookToDatabase(book);
-    return bookId;
 }
 
 #include "moc_HomeView.cpp"

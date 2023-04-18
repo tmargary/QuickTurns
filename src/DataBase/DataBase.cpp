@@ -39,7 +39,7 @@ void BookDB::createTable(const std::string &dbFilePath)
         std::cout << "Table created Successfully" << std::endl;
 }
 
-int BookDB::addBookToDatabase(Book curBook)
+int BookDB::addBookToDatabase(const Book& curBook)
 {
     int randomId = generateUniqueId();
 
