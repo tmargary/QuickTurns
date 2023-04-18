@@ -1,10 +1,8 @@
 #pragma once
 #include <QDir>
 #include <QHBoxLayout>
-#include <QListWidget>
 #include <QPushButton>
 #include <QTableWidget>
-#include <QWidget>
 
 #include "DataBase.h"
 

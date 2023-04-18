@@ -1,17 +1,12 @@
 #include <QCoreApplication>
 #include <QFileDialog>
-#include <QHBoxLayout>
 #include <QHeaderView>
-#include <QTableWidget>
 #include <QTableWidgetItem>
-#include <QtCore/QTextStream>
-#include <iostream>
 
 #include "ArchiveExtractor.h"
 #include "BookMetadata.h"
 #include "DataBase.h"
 #include "HomeView.h"
-#include "ReaderView.h"
 #include "StringOp.h"
 
 HomeView::HomeView(const QString &folderPath, QWidget *parent)
