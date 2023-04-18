@@ -1,24 +1,39 @@
 #pragma once
-#include <QListWidget>
-#include <QPushButton>
+#include <QDir>
 #include <QHBoxLayout>
-#include <QWidget>
+#include <QPushButton>
+#include <QTableWidget>
 
-class HomeView : public QWidget {
+#include "DataBase.h"
+
+namespace fs = std::filesystem;
+
+class HomeView : public QWidget
+{
     Q_OBJECT
 
-public:
-    explicit HomeView(QWidget *parent = nullptr);
-    void setupListWidget();
+  public:
+    explicit HomeView(const QString &folderPath, QWidget *parent = nullptr);
+    void setupTableWidget();
     void setupAddFileButton();
-    void saveButtonConfig(const QString &filePath);
-    void loadButtonConfig();
+    void addBookToTableWidget(const QString &bookName, const QString &bookAuthor, const QString &bookDate,
+                              const QString &bookPath);
 
-signals:
+        private : void setButtonStyle(QPushButton *button);
+    QString createDestinationPath(const QString &fileName);
+    bool bookExists(const Book &bookToCheck);
+    void handleButtonClick();
+    Book parseMetadataAndCheckDatabase(const QString &filePath);
+    bool createDestinationDirectory(QDir &destinationDir, const fs::path &destinationPath);
+    void copyBookAndCover(const QString &filePath, const fs::path &destinationPath);
+    void addBookToDatabaseAndTableWidget(const Book &addedBookMeta, const fs::path &destinationPath);
+
+  signals:
     void itemClicked(const QString &filePath);
 
-private:
-    QListWidget *listWidget;
+  private:
+    QTableWidget *tableWidget;
     QVBoxLayout *layout;
-    QString configFilePath;
+    std::string m_folderPath;
+    BookDB database;
 };

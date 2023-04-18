@@ -9,6 +9,7 @@
 #include <QVBoxLayout>
 #include <QMainWindow>
 #include <QFileInfo>
+#include <QSettings>
 #include <thread>
 
 void launchServer(int port, const std::string& path) {
@@ -36,16 +37,25 @@ ReaderView::ReaderView(QWidget *parent) : QWidget(parent) {
 
 void ReaderView::loadFile(const QString &filePath)
 {
+    QSettings settings;
+    QString serverPath = settings.value("folderPath").toString();
+    
     QString epubFilePath = filePath;
     QFileInfo epubFileInfo(epubFilePath);
-    QString serverPath = epubFileInfo.absolutePath();
-    int serverPort = 8000;
+    int serverPort = 8081;
+
+    QString relativePath = filePath.mid(serverPath.length());
 
     std::thread serverThread(launchServer, serverPort, serverPath.toStdString());
     serverThread.detach();
 
-    QUrl bookPath = QUrl(QString("http://localhost:%1/%2").arg(serverPort).arg(epubFileInfo.fileName()));
+    QUrl bookPath = QUrl(QString("http://localhost:%1/%2").arg(serverPort).arg(relativePath));
     webView->setUrl(QUrl(QStringLiteral("qrc:/Styles/continuous-spreads.html?url=%1").arg(bookPath.toString())));
+}
+
+ReaderView::~ReaderView()
+{
+    delete webView->page();
 }
 
 #include "moc_ReaderView.cpp"

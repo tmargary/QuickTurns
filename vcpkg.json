@@ -5,6 +5,8 @@
     "dependencies": [
         "gtest",
         "libzippp",
-        "openssl"
+        "openssl",
+        "sqlite3",
+        "tinyxml2"
     ]
 }

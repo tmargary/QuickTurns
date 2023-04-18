@@ -1,6 +1,7 @@
-#include "ArchiveExtractor/ArchiveExtractor.h"
-#include "TestConstants.h"
-#include "Util/Checksum.h"
+#include "ArchiveExtractor.h"
+
+#include "test.h"
+#include "Checksum.h"
 #include <gtest/gtest.h>
 
 using namespace TestConstants;
@@ -30,10 +31,4 @@ TEST(ArchiveExtractorTest, TestEpubExtractorFileCheckSum)
     const std::string checksum_result = Checksum::generateChecksumForFile(SAMPLE_ENTRY);
 
     ASSERT_EQ(checksum_result, CHECKSUM_FILE_EXPECTED);
-}
-
-int main(int argc, char **argv)
-{
-    ::testing::InitGoogleTest(&argc, argv);
-    return RUN_ALL_TESTS();
 }

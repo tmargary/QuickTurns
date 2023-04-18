@@ -1,4 +1,4 @@
-#include "Util/Checksum.h"
+#include "Checksum.h"
 
 #include <algorithm>
 #include <array>
@@ -87,3 +87,4 @@ std::string Checksum::generateChecksumForFile(const fs::path &file)
     const std::string fileContent = readFile(file);
     return sha256(fileContent);
 }
+

@@ -1,9 +1,10 @@
+#include "ArchiveExtractor.h"
+#include <algorithm>
 #include <filesystem>
 #include <fstream>
+#include <stdexcept>
 #include <string>
 #include <vector>
-
-#include "ArchiveExtractor/ArchiveExtractor.h"
 
 using namespace libzippp;
 namespace fs = std::filesystem;
@@ -27,7 +28,6 @@ void EpubExtractor::extract()
     const std::vector<ZipEntry> entries = readEntries(source);
     for (const auto &entry : entries)
     {
-        // ZipEntry entry = *ittr;
         const fs::path name = entry.getName();
         const std::string textData = entry.readAsText();
         const fs::path output_file = output_dir / name;
@@ -43,4 +43,46 @@ std::unique_ptr<ArchiveExtractor> createExtractor(const fs::path &source, const 
         return std::make_unique<EpubExtractor>(source, destinationDir);
     }
     throw std::runtime_error("Unsupported file format.");
+}
+
+std::string EpubExtractor::readSpecificEntry(const std::string &entryName)
+{
+    const std::vector<ZipEntry> entries = readEntries(source);
+
+    for (const auto &entry : entries)
+    {
+        std::string currentEntryName = entry.getName();
+        std::size_t found = currentEntryName.rfind('/');
+
+        if (found != std::string::npos)
+        {
+            std::string lastPathComponent = currentEntryName.substr(found + 1);
+
+            if (entryName == lastPathComponent)
+            {
+                return entry.readAsText();
+            }
+        }
+        else if (entryName == currentEntryName)
+        {
+            return entry.readAsText();
+        }
+    }
+
+    std::cerr << "Warning: Entry not found: " << entryName << std::endl;
+    return "";
+}
+
+bool EpubExtractor::extractSpecificEntry(const std::string &entryName, const fs::path &output_file)
+{
+    const std::string textData = readSpecificEntry(entryName);
+    if (textData != "")
+    {
+        writeEntry(output_file, textData);
+        return true;
+    }
+    else
+    {
+        return false;
+    }
 }

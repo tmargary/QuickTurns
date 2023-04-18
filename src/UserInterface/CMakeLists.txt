@@ -11,5 +11,13 @@ add_library(UserInterface STATIC
 )
 
 target_include_directories(UserInterface PUBLIC include)
+target_link_libraries(UserInterface PUBLIC DataBase)
 
-target_link_libraries(UserInterface PRIVATE Qt6::Core Qt6::Widgets Qt6::WebEngineWidgets)
+target_link_libraries(UserInterface PRIVATE 
+    Qt6::Core 
+    Qt6::Widgets 
+    Qt6::WebEngineWidgets 
+    ArchiveExtractor 
+    BookMetadata
+    Util
+    )

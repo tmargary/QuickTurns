@@ -12,8 +12,8 @@ class StackedView : public QWidget
     Q_OBJECT
 
 public:
-    explicit StackedView(QWidget *parent = nullptr);
-
+    explicit StackedView(const QString &folderPath, QWidget *parent = nullptr);
+    
 public slots:
     void switchToReaderView(const QString &filePath);
     void switchView();
