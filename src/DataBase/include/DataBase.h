@@ -4,25 +4,8 @@
 #include <map>
 #include <sqlite3.h>
 #include <string>
+#include "BookMetadata.h"
 
-struct Book
-{
-    std::string bookPath;
-    std::string bookName;
-    std::string bookAuthorName;
-    int bookYear{};
-    int lastPage{};
-    Book() = default;
-    Book(std::string path, std::string bName, std::string aName, int year, int lPage)
-        : bookPath(path), bookName(bName), bookAuthorName(aName), bookYear(year), lastPage(lPage)
-    {
-    }
-    void print()
-    {
-        std::cout << bookPath << " " << bookName << " " << bookAuthorName << " " << bookYear << " " << lastPage
-                  << " \n";
-    }
-};
 
 class BookDB
 {
@@ -41,7 +24,7 @@ class BookDB
     int generateUniqueId();
     int generateRandomId();
     bool idExists(int id);
-  
+
   private:
     std::string bookDBTable;
     sqlite3 *DB;

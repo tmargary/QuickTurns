@@ -5,7 +5,14 @@
 #include <tinyxml2.h>
 #include <tuple>
 
-#include <BookMetadata.h>
+#include "BookMetadata.h"
+#include "ArchiveExtractor.h"
+
+Book::Builder Book::create()
+{
+    return Builder();
+}
+
 
 std::string parseDate(const std::string &dateStr)
 {
@@ -27,8 +34,12 @@ std::string parseDate(const std::string &dateStr)
     return parsedDateStream.str();
 }
 
-BookMetadata parseMetadata(const std::string &xmlContent)
+Book parseMetadata(const std::string &filePath)
 {
+    // Extract the epub archive
+    std::unique_ptr<ArchiveExtractor> extractor = createExtractor(filePath, "");
+    const std::string xmlContent = extractor->readSpecificEntry("content.opf");
+
     using namespace tinyxml2;
     XMLDocument doc;
     XMLError error = doc.Parse(xmlContent.c_str());
@@ -38,39 +49,39 @@ BookMetadata parseMetadata(const std::string &xmlContent)
         throw std::runtime_error("Failed to parse XML content.");
     }
 
-    BookMetadata metadata;
+    Book::Builder builder;
 
     auto metadataElement = doc.FirstChildElement("package")->FirstChildElement("metadata");
 
     // Extract book title
     if (auto titleElement = metadataElement->FirstChildElement("dc:title"))
     {
-        metadata.title = titleElement->GetText();
+        builder.setTitle(titleElement->GetText());
     }
 
     // Extract author name
     if (auto creatorElement = metadataElement->FirstChildElement("dc:creator"))
     {
-        metadata.author = creatorElement->GetText();
-        metadata.author_file_as = creatorElement->Attribute("opf:file-as");
+        builder.setAuthor(creatorElement->GetText())
+            .setAuthorFileAs(creatorElement->Attribute("opf:file-as"));
     }
 
     // Extract contributor
     if (auto contributorElement = metadataElement->FirstChildElement("dc:contributor"))
     {
-        metadata.contributor = contributorElement->GetText();
+        builder.setContributor(contributorElement->GetText());
     }
 
     // Extract publisher
     if (auto publisherElement = metadataElement->FirstChildElement("dc:publisher"))
     {
-        metadata.publisher = publisherElement->GetText();
+        builder.setPublisher(publisherElement->GetText());
     }
 
     // Extract UUID
     if (auto uuidElement = metadataElement->FirstChildElement("dc:identifier"))
     {
-        metadata.uuid = uuidElement->GetText();
+        builder.setUuid(uuidElement->GetText());
     }
 
     // Extract date
@@ -78,26 +89,29 @@ BookMetadata parseMetadata(const std::string &xmlContent)
     {
         const std::string dateStr = dateElement->GetText();
         std::string parsedDate = parseDate(dateStr);
-        metadata.date = parsedDate;
+        builder.setDate(parsedDate);
     }
 
     // Extract rights
     if (auto rightsElement = metadataElement->FirstChildElement("dc:rights"))
     {
-        metadata.rights = rightsElement->GetText();
+        builder.setRights(rightsElement->GetText());
     }
 
     // Extract language
     if (auto languageElement = metadataElement->FirstChildElement("dc:language"))
     {
-        metadata.language = languageElement->GetText();
+        builder.setLanguage(languageElement->GetText());
     }
 
     // Extract ISBN
     if (auto isbnElement = metadataElement->FirstChildElement("dc:identifier[opf:scheme='ISBN']"))
     {
-        metadata.isbn = isbnElement->GetText();
+        builder.setIsbn(isbnElement->GetText());
     }
 
-    return metadata;
+    // Set remaining fields
+    builder.setBookPath(filePath);
+
+    return builder.build();
 }
