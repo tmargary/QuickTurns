@@ -1,10 +1,10 @@
 #include <QCoreApplication>
 #include <QFileDialog>
 #include <QHBoxLayout>
+#include <QHeaderView>
 #include <QTableWidget>
 #include <QTableWidgetItem>
 #include <QtCore/QTextStream>
-#include <QHeaderView>
 #include <iostream>
 
 #include "ArchiveExtractor.h"
@@ -25,7 +25,8 @@ HomeView::HomeView(const QString &folderPath, QWidget *parent)
     setupAddFileButton();
 }
 
-void HomeView::addBookToTableWidget(const QString &bookName, const QString &bookAuthor, const QString &bookDate, const QString &bookPath)
+void HomeView::addBookToTableWidget(const QString &bookName, const QString &bookAuthor, const QString &bookDate,
+                                    const QString &bookPath)
 {
     int row = tableWidget->rowCount();
     tableWidget->insertRow(row);
@@ -35,9 +36,11 @@ void HomeView::addBookToTableWidget(const QString &bookName, const QString &book
     tableWidget->setItem(row, 0, nameItem);
 
     QTableWidgetItem *authorItem = new QTableWidgetItem(bookAuthor);
+    authorItem->setData(Qt::UserRole, bookPath); // Store the bookPath in the item
     tableWidget->setItem(row, 1, authorItem);
 
     QTableWidgetItem *dateItem = new QTableWidgetItem(bookDate);
+    dateItem->setData(Qt::UserRole, bookPath); // Store the bookPath in the item
     tableWidget->setItem(row, 2, dateItem);
 }
 
@@ -115,7 +118,6 @@ void HomeView::addBookToDatabaseAndTableWidget(const Book &addedBookMeta, const 
     addBookToTableWidget(bookName, bookAuthor, bookDate, QString::fromStdString(destinationPath.string()));
 }
 
-
 void HomeView::handleButtonClick()
 {
     namespace fs = std::filesystem;
@@ -150,7 +152,9 @@ void HomeView::setupTableWidget()
 {
     tableWidget = new QTableWidget;
     tableWidget->setColumnCount(3); // Set the number of columns to 3
-    tableWidget->setHorizontalHeaderLabels(QStringList() << "Book Name" << "Author" << "Date"); // Add column headers
+    tableWidget->setHorizontalHeaderLabels(QStringList() << "Book Name"
+                                                         << "Author"
+                                                         << "Date"); // Add column headers
     tableWidget->horizontalHeader()->setStretchLastSection(true);
     layout->addWidget(tableWidget);
     // Load the items from the database
@@ -163,7 +167,8 @@ void HomeView::setupTableWidget()
             QString bookAuthor = QString::fromStdString(pair.second.author.value_or(""));
             QString bookDate = QString::fromStdString(pair.second.date.value_or(""));
             QString bookPath = QString::fromStdString(pair.second.bookPath);
-            addBookToTableWidget(bookName, bookAuthor, bookDate, bookPath); // Add the author name and date to the table widget
+            addBookToTableWidget(bookName, bookAuthor, bookDate,
+                                 bookPath); // Add the author name and date to the table widget
         }
         delete bookMap;
     }
@@ -173,6 +178,5 @@ void HomeView::setupTableWidget()
         emit itemClicked(bookPath);
     });
 }
-
 
 #include "moc_HomeView.cpp"
