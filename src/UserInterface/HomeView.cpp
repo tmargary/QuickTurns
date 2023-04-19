@@ -23,12 +23,23 @@ HomeView::HomeView(const QString &folderPath, QWidget *parent)
     setupAddFileButton();
     setupTableWidget();
 
-    deleteBookButton = new QPushButton("Delete Book", this);
+    deleteBookButton = new QPushButton(this);
+    deleteBookButton->setText(QString::fromUtf8("\xF0\x9F\x97\x91")); // Recycle bin emoji
+    deleteBookButton->setToolTip("Delete Book");
+    setButtonStyle(deleteBookButton);
+    deleteBookButton->setFixedHeight(30);
+    deleteBookButton->setFixedWidth(90);
     connect(deleteBookButton, &QPushButton::clicked, this, &HomeView::handleDeleteBookClick);
 
     mainLayout->addWidget(tableWidget, 0, 0);
-    mainLayout->addWidget(addFileButton, 1, 0);
-    mainLayout->addWidget(deleteBookButton, 2, 0);
+
+    // Create a QHBoxLayout to hold addFileButton and deleteBookButton
+    QHBoxLayout *buttonLayout = new QHBoxLayout();
+    buttonLayout->addWidget(addFileButton);
+    buttonLayout->addWidget(deleteBookButton);
+
+    // Add the buttonLayout to the mainLayout
+    mainLayout->addLayout(buttonLayout, 1, 0);
 
     QFrame *frame = new QFrame;
     QVBoxLayout *frameLayout = new QVBoxLayout(frame);
@@ -100,7 +111,8 @@ void HomeView::addBookToTableWidget(int bookId, const QString &bookName, const Q
 
 void HomeView::setupAddFileButton()
 {
-    addFileButton = new QPushButton("Add File");
+    addFileButton = new QPushButton("Add");
+    addFileButton->setFont(QFont("Segoe UI Emoji"));
     setButtonStyle(addFileButton);
     addFileButton->setFixedHeight(30);
 
@@ -109,7 +121,7 @@ void HomeView::setupAddFileButton()
 
 void HomeView::setButtonStyle(QPushButton *button)
 {
-    button->setStyleSheet("QPushButton { background-color: #f7f7f7; border-radius: 8px; color: black; }"
+    button->setStyleSheet("QPushButton { background-color: #cacfd2 ; border-radius: 8px; color: black; }"
                           "QPushButton:hover { background-color: #e3e3e3; }"
                           "QPushButton:pressed { background-color: #d1d1d1; }");
 }
@@ -264,22 +276,16 @@ void HomeView::handleDeleteBookClick()
         database.removeBook(bookId);
         tableWidget->removeRow(selectedRow);
 
-        if (std::filesystem::exists(bookFilePath))
-        {
-            std::filesystem::remove(bookFilePath);
-        }
-
         if (std::filesystem::exists(bookDirPath))
         {
             std::filesystem::remove_all(bookDirPath);
+            std::cout << "bookDirPath" << bookDirPath << "is removed.\n";
         }
 
         metadataLabel->setText(""); // Clear the metadata label
-        coverLabel->clear(); // Clear the cover label
+        coverLabel->clear();        // Clear the cover label
     }
 }
-
-
 
 void HomeView::setupTableWidget()
 {
@@ -316,7 +322,6 @@ void HomeView::setupTableWidget()
         QString bookPath = item->data(Qt::UserRole).toString(); // Retrieve the bookPath from the item
         updateMetadataAndCoverLabels(retrievedBookPath);
     });
-    
 
     QObject::connect(tableWidget, &QTableWidget::itemDoubleClicked, [=](QTableWidgetItem *item) {
         QPair<int, QString> retrievedData = item->data(Qt::UserRole).value<QPair<int, QString>>();
@@ -396,9 +401,10 @@ void HomeView::updateCoverLabel(const fs::path &bookPath)
 
 void HomeView::updateMetadataAndCoverLabels(const QString &bookPath)
 {
-    Book bookMeta = database.getBookByPath(bookPath.toStdString());
-    updateMetadataLabel(bookMeta);
-    updateCoverLabel(fs::path(bookPath.toStdString()));
+    Book book = database.getBookByPath(bookPath.toStdString());
+    updateMetadataLabel(book);
+    fs::path fsBookPath(bookPath.toStdString());
+    updateCoverLabel(fsBookPath);
 }
 
 #include "moc_HomeView.cpp"

@@ -269,6 +269,8 @@ void BookDB::removeBook(int bookId)
     }
 
     sqlite3_finalize(stmt);
+
+    std::cout << "BookId" << bookId << "is removed.\n";
 }
 
 
