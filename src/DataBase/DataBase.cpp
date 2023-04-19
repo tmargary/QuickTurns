@@ -17,7 +17,7 @@ const int LAST_PAGE_COL = 12;
 
 int BookDB::generateRandomId()
 {
-    int randomId = QRandomGenerator::global()->bounded(1, 1000001);
+    const int randomId = QRandomGenerator::global()->bounded(1, 1000001);
     return randomId;
 }
 
@@ -43,14 +43,16 @@ void BookDB::createTable(const std::string &dbFilePath)
                   "ISBN         TEXT, "
                   "LASTPAGE     INT             );";
     exit = sqlite3_open(dbFilePath.c_str(), &DB);
-    exit = sqlite3_exec(DB, bookDBTable.c_str(), NULL, 0, &messaggeError);
+    exit = sqlite3_exec(DB, bookDBTable.c_str(), nullptr, nullptr, &messaggeError);
     if (exit != SQLITE_OK)
     {
         std::cerr << "Error Create Table: " << sqlite3_errmsg(DB) << std::endl;
         sqlite3_free(messaggeError);
     }
     else
+    {
         std::cout << "Table created Successfully" << std::endl;
+    }
 }
 
 int BookDB::addBookToDatabase(const Book &curBook)
@@ -81,7 +83,7 @@ void BookDB::executeInsertQuery(int randomId, Book curBook)
         .setLastPage(curBook.lastPage);
 
     // Build the Book object
-    Book book = builder.build();
+    const Book book = builder.build();
 
     // Construct the INSERT query
     bookDBTable = "INSERT INTO BOOKS (ID, BOOKPATH, TITLE, AUTHOR, AUTHOR_FILE_AS, CONTRIBUTOR, PUBLISHER, UUID, DATE, "
@@ -95,7 +97,7 @@ void BookDB::executeInsertQuery(int randomId, Book curBook)
                   std::to_string(book.lastPage) + ");";
 
     // Execute the INSERT query
-    exit = sqlite3_exec(DB, bookDBTable.c_str(), NULL, 0, &messaggeError);
+    exit = sqlite3_exec(DB, bookDBTable.c_str(), nullptr, nullptr, &messaggeError);
 
     if (exit != SQLITE_OK)
     {
@@ -103,7 +105,9 @@ void BookDB::executeInsertQuery(int randomId, Book curBook)
         sqlite3_free(messaggeError);
     }
     else
+    {
         std::cout << "Records created Successfully!" << std::endl;
+    }
 }
 
 int BookDB::generateUniqueId()
@@ -118,7 +122,7 @@ int BookDB::generateUniqueId()
     return randomId;
 }
 
-bool BookDB::idExists(int id)
+bool BookDB::idExists(int bookId)
 {
     bool exists = false;
     const char *query = "SELECT id FROM BOOKS WHERE id = ?";
@@ -131,7 +135,7 @@ bool BookDB::idExists(int id)
         return exists;
     }
 
-    sqlite3_bind_int(stmt, BOOK_PATH_COL, id);
+    sqlite3_bind_int(stmt, BOOK_PATH_COL, bookId);
 
     if (sqlite3_step(stmt) == SQLITE_ROW)
     {
@@ -199,7 +203,7 @@ bool BookDB::bookExists(const Book &bookToCheck)
     return false;
 }
 
-void BookDB::changeLastePage(int id, int newPage)
+void BookDB::changeLastePage(int bookid, int newPage)
 {
     bookDBTable = "UPDATE BOOKS SET LASTPAGE = ? WHERE id = ?";
 
@@ -212,7 +216,7 @@ void BookDB::changeLastePage(int id, int newPage)
     }
 
     sqlite3_bind_int(stmt, BOOK_PATH_COL, newPage);
-    sqlite3_bind_int(stmt, BOOK_NAME_COL, id);
+    sqlite3_bind_int(stmt, BOOK_NAME_COL, bookid);
 
     exit = sqlite3_step(stmt);
 
@@ -275,7 +279,7 @@ void BookDB::removeBook(int bookId)
         sqlite3_close(DB);
     }
 
-    sqlite3_bind_int(stmt, BOOK_PATH_COL, bookId); 
+    sqlite3_bind_int(stmt, BOOK_PATH_COL, bookId);
 
     if (sqlite3_step(stmt) != SQLITE_DONE)
     {
@@ -286,7 +290,6 @@ void BookDB::removeBook(int bookId)
 
     std::cout << "BookId" << bookId << "is removed.\n";
 }
-
 
 Book BookDB::getBookByPath(const std::string &bookPath)
 {
