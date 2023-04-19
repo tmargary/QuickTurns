@@ -1,6 +1,20 @@
 #include "DataBase.h"
 #include <QRandomGenerator>
 
+// Global variables for column indices
+const int BOOK_PATH_COL = 1;
+const int BOOK_NAME_COL = 2;
+const int AUTHOR_NAME_COL = 3;
+const int AUTHOR_FILE_AS_COL = 4;
+const int CONTRIBUTOR_COL = 5;
+const int PUBLISHER_COL = 6;
+const int UUID_COL = 7;
+const int DATE_COL = 8;
+const int RIGHTS_COL = 9;
+const int LANGUAGE_COL = 10;
+const int ISBN_COL = 11;
+const int LAST_PAGE_COL = 12;
+
 int BookDB::generateRandomId()
 {
     int randomId = QRandomGenerator::global()->bounded(1, 1000001);
@@ -117,7 +131,7 @@ bool BookDB::idExists(int id)
         return exists;
     }
 
-    sqlite3_bind_int(stmt, 1, id);
+    sqlite3_bind_int(stmt, BOOK_PATH_COL, id);
 
     if (sqlite3_step(stmt) == SQLITE_ROW)
     {
@@ -142,11 +156,11 @@ std::map<int, Book> *BookDB::getBooksList()
     while ((exit = sqlite3_step(stmt)) == SQLITE_ROW)
     {
         int id = sqlite3_column_int(stmt, 0);
-        const char *bookPath = (const char *)sqlite3_column_text(stmt, 1);
-        const char *bookName = (const char *)sqlite3_column_text(stmt, 2);
-        const char *authorName = (const char *)sqlite3_column_text(stmt, 3);
-        const char *year = (const char *)sqlite3_column_text(stmt, 8);
-        int lastPage = static_cast<int>(sqlite3_column_double(stmt, 5));
+        const char *bookPath = (const char *)sqlite3_column_text(stmt, BOOK_PATH_COL);
+        const char *bookName = (const char *)sqlite3_column_text(stmt, BOOK_NAME_COL);
+        const char *authorName = (const char *)sqlite3_column_text(stmt, AUTHOR_NAME_COL);
+        const char *year = (const char *)sqlite3_column_text(stmt, DATE_COL);
+        int lastPage = static_cast<int>(sqlite3_column_double(stmt, CONTRIBUTOR_COL));
 
         Book tmp = Book::create()
                        .setId(id)
@@ -197,8 +211,8 @@ void BookDB::changeLastePage(int id, int newPage)
         sqlite3_close(DB);
     }
 
-    sqlite3_bind_int(stmt, 1, newPage);
-    sqlite3_bind_int(stmt, 2, id);
+    sqlite3_bind_int(stmt, BOOK_PATH_COL, newPage);
+    sqlite3_bind_int(stmt, BOOK_NAME_COL, id);
 
     exit = sqlite3_step(stmt);
 
@@ -224,15 +238,15 @@ Book BookDB::getBookById(int bookId)
         return builder.build();
     }
 
-    sqlite3_bind_int(stmt, 1, bookId);
+    sqlite3_bind_int(stmt, BOOK_PATH_COL, bookId);
 
     if (sqlite3_step(stmt) == SQLITE_ROW)
     {
-        const char *bookPath = (const char *)sqlite3_column_text(stmt, 1);
-        const char *bookName = (const char *)sqlite3_column_text(stmt, 2);
-        const char *authorName = (const char *)sqlite3_column_text(stmt, 3);
-        const char *year = (const char *)sqlite3_column_text(stmt, 4);
-        int lastPage = sqlite3_column_double(stmt, 5);
+        const char *bookPath = (const char *)sqlite3_column_text(stmt, BOOK_PATH_COL);
+        const char *bookName = (const char *)sqlite3_column_text(stmt, BOOK_NAME_COL);
+        const char *authorName = (const char *)sqlite3_column_text(stmt, AUTHOR_NAME_COL);
+        const char *year = (const char *)sqlite3_column_text(stmt, AUTHOR_FILE_AS_COL);
+        int lastPage = sqlite3_column_double(stmt, CONTRIBUTOR_COL);
 
         builder.setBookPath(bookPath)
             .setBookPath(bookPath)
@@ -261,7 +275,7 @@ void BookDB::removeBook(int bookId)
         sqlite3_close(DB);
     }
 
-    sqlite3_bind_int(stmt, 1, bookId); 
+    sqlite3_bind_int(stmt, BOOK_PATH_COL, bookId); 
 
     if (sqlite3_step(stmt) != SQLITE_DONE)
     {
@@ -287,22 +301,22 @@ Book BookDB::getBookByPath(const std::string &bookPath)
         return builder.build();
     }
 
-    sqlite3_bind_text(stmt, 1, bookPath.c_str(), -1, SQLITE_TRANSIENT);
+    sqlite3_bind_text(stmt, BOOK_PATH_COL, bookPath.c_str(), -1, SQLITE_TRANSIENT);
 
     if (sqlite3_step(stmt) == SQLITE_ROW)
     {
-        const char *bookPath = (const char *)sqlite3_column_text(stmt, 1);
-        const char *bookName = (const char *)sqlite3_column_text(stmt, 2);
-        const char *authorName = (const char *)sqlite3_column_text(stmt, 3);
-        const char *authorFileAs = (const char *)sqlite3_column_text(stmt, 4);
-        const char *contributor = (const char *)sqlite3_column_text(stmt, 5);
-        const char *publisher = (const char *)sqlite3_column_text(stmt, 6);
-        const char *uuid = (const char *)sqlite3_column_text(stmt, 7);
-        const char *date = (const char *)sqlite3_column_text(stmt, 8);
-        const char *rights = (const char *)sqlite3_column_text(stmt, 9);
-        const char *language = (const char *)sqlite3_column_text(stmt, 10);
-        const char *isbn = (const char *)sqlite3_column_text(stmt, 11);
-        int lastPage = sqlite3_column_int(stmt, 12);
+        const char *bookPath = (const char *)sqlite3_column_text(stmt, BOOK_PATH_COL);
+        const char *bookName = (const char *)sqlite3_column_text(stmt, BOOK_NAME_COL);
+        const char *authorName = (const char *)sqlite3_column_text(stmt, AUTHOR_NAME_COL);
+        const char *authorFileAs = (const char *)sqlite3_column_text(stmt, AUTHOR_FILE_AS_COL);
+        const char *contributor = (const char *)sqlite3_column_text(stmt, CONTRIBUTOR_COL);
+        const char *publisher = (const char *)sqlite3_column_text(stmt, PUBLISHER_COL);
+        const char *uuid = (const char *)sqlite3_column_text(stmt, UUID_COL);
+        const char *date = (const char *)sqlite3_column_text(stmt, DATE_COL);
+        const char *rights = (const char *)sqlite3_column_text(stmt, RIGHTS_COL);
+        const char *language = (const char *)sqlite3_column_text(stmt, LANGUAGE_COL);
+        const char *isbn = (const char *)sqlite3_column_text(stmt, ISBN_COL);
+        int lastPage = sqlite3_column_int(stmt, LAST_PAGE_COL);
 
         builder.setBookPath(bookPath)
             .setTitle(bookName)
