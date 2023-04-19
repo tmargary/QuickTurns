@@ -251,6 +251,27 @@ Book BookDB::getBookById(int bookId)
     return builder.build();
 }
 
+void BookDB::removeBook(int bookId)
+{
+    const char *query = "DELETE FROM BOOKS WHERE ID = ?";
+    exit = sqlite3_prepare_v2(DB, query, -1, &stmt, NULL);
+    if (exit != SQLITE_OK)
+    {
+        std::cerr << "Error preparing statement: " << sqlite3_errmsg(DB) << std::endl;
+        sqlite3_close(DB);
+    }
+
+    sqlite3_bind_int(stmt, 1, bookId); 
+
+    if (sqlite3_step(stmt) != SQLITE_DONE)
+    {
+        std::cerr << "Error deleting data: " << sqlite3_errmsg(DB) << std::endl;
+    }
+
+    sqlite3_finalize(stmt);
+}
+
+
 Book BookDB::getBookByPath(const std::string &bookPath)
 {
     Book::Builder builder;

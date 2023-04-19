@@ -18,6 +18,7 @@ class BookDB
     int addBookToDatabase(const Book& curBook);
     bool bookExists(const Book &bookToCheck);
     void changeLastePage(int, int);
+    void removeBook(int bookId);
     ~BookDB();
 
   private:

@@ -17,14 +17,13 @@ class HomeView : public QWidget
     explicit HomeView(const QString &folderPath, QWidget *parent = nullptr);
     void setupTableWidget();
     void setupAddFileButton();
-    void addBookToTableWidget(const QString &bookName, const QString &bookAuthor, const QString &bookDate,
+    void addBookToTableWidget(int bookId, const QString &bookName, const QString &bookAuthor, const QString &bookDate,
                               const QString &bookPath);
 
   private:
     void setButtonStyle(QPushButton *button);
-    QString createDestinationPath(const QString &fileName);
-    bool bookExists(const Book &bookToCheck);
     void handleButtonClick();
+    void handleDeleteBookClick();
     Book parseMetadataAndCheckDatabase(const QString &filePath);
     bool createDestinationDirectory(QDir &destinationDir, const fs::path &destinationPath);
     void copyBookAndCover(const QString &filePath, const fs::path &destinationPath);
@@ -34,6 +33,8 @@ class HomeView : public QWidget
     void updateMetadataLabel(const Book &book);
     void updateCoverLabel(const fs::path &bookPath);
     void updateMetadataAndCoverLabels(const QString &bookPath);
+    void updateSelectedBookLabels(QTableWidgetItem *current, QTableWidgetItem *previous);
+
     
 
   signals:
@@ -42,6 +43,7 @@ class HomeView : public QWidget
   private:
     QLabel *coverLabel;
     QPushButton *addFileButton;
+    QPushButton *deleteBookButton;
     QLabel *metadataLabel;
     QTableWidget *tableWidget;
     QVBoxLayout *mainLayout;

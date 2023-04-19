@@ -2,7 +2,10 @@
 #include <QFileDialog>
 #include <QHeaderView>
 #include <QMessageBox>
+#include <QPair>
+#include <QString>
 #include <QTableWidgetItem>
+#include <QVariant>
 #include <string>
 
 #include "ArchiveExtractor.h"
@@ -20,8 +23,12 @@ HomeView::HomeView(const QString &folderPath, QWidget *parent)
     setupAddFileButton();
     setupTableWidget();
 
+    deleteBookButton = new QPushButton("Delete Book", this);
+    connect(deleteBookButton, &QPushButton::clicked, this, &HomeView::handleDeleteBookClick);
+
     mainLayout->addWidget(tableWidget, 0, 0);
     mainLayout->addWidget(addFileButton, 1, 0);
+    mainLayout->addWidget(deleteBookButton, 2, 0);
 
     QFrame *frame = new QFrame;
     QVBoxLayout *frameLayout = new QVBoxLayout(frame);
@@ -68,24 +75,26 @@ HomeView::HomeView(const QString &folderPath, QWidget *parent)
     mainLayout->setColumnStretch(1, 0);
 }
 
-
-
-void HomeView::addBookToTableWidget(const QString &bookName, const QString &bookAuthor, const QString &bookDate,
-                                    const QString &bookPath)
+void HomeView::addBookToTableWidget(int bookId, const QString &bookName, const QString &bookAuthor,
+                                    const QString &bookDate, const QString &bookPath)
 {
     int row = tableWidget->rowCount();
     tableWidget->insertRow(row);
 
+    QPair<int, QString> bookData;
+    bookData.first = bookId;    // Assuming bookId is of type int
+    bookData.second = bookPath; // Assuming bookPath is of type QString
+
     QTableWidgetItem *nameItem = new QTableWidgetItem(bookName);
-    nameItem->setData(Qt::UserRole, bookPath); // Store the bookPath in the item
+    nameItem->setData(Qt::UserRole, QVariant::fromValue(bookData)); // Store the bookPath in the item
     tableWidget->setItem(row, 0, nameItem);
 
     QTableWidgetItem *authorItem = new QTableWidgetItem(bookAuthor);
-    authorItem->setData(Qt::UserRole, bookPath); // Store the bookPath in the item
+    authorItem->setData(Qt::UserRole, QVariant::fromValue(bookData)); // Store the bookPath in the item
     tableWidget->setItem(row, 1, authorItem);
 
     QTableWidgetItem *dateItem = new QTableWidgetItem(bookDate);
-    dateItem->setData(Qt::UserRole, bookPath); // Store the bookPath in the item
+    dateItem->setData(Qt::UserRole, QVariant::fromValue(bookData)); // Store the bookPath in the item
     tableWidget->setItem(row, 2, dateItem);
 }
 
@@ -107,27 +116,46 @@ void HomeView::setButtonStyle(QPushButton *button)
 
 Book HomeView::parseMetadataAndCheckDatabase(const QString &filePath)
 {
-    Book addedBookMeta = parseMetadata(filePath.toStdString());
+    try
+    {
+        Book addedBookMeta = parseMetadata(filePath.toStdString());
 
-    if (database.bookExists(addedBookMeta))
+        if (database.bookExists(addedBookMeta))
+        {
+            QMessageBox msgBox;
+            msgBox.setWindowTitle("Book already exists");
+            msgBox.setText("The selected book already exists.");
+            msgBox.setStandardButtons(QMessageBox::Ok);
+            msgBox.setDefaultButton(QMessageBox::Ok);
+
+            int ret = msgBox.exec();
+            if (ret == QMessageBox::Ok)
+            {
+                qDebug() << "User clicked Okay.";
+            }
+
+            return {};
+        }
+
+        return addedBookMeta;
+    }
+    catch (std::exception &e)
     {
         QMessageBox msgBox;
-        msgBox.setWindowTitle("Book already exists");
-        msgBox.setText("The selected book already exists.");
+        msgBox.setWindowTitle("Error");
+        msgBox.setText("Could not read the file: " + QString(e.what()));
         msgBox.setStandardButtons(QMessageBox::Ok);
         msgBox.setDefaultButton(QMessageBox::Ok);
 
         int ret = msgBox.exec();
-        if (ret == QMessageBox::Ok) {
+        if (ret == QMessageBox::Ok)
+        {
             qDebug() << "User clicked Okay.";
         }
 
         return {};
     }
-
-    return addedBookMeta;
 }
-
 
 bool HomeView::createDestinationDirectory(QDir &destinationDir, const fs::path &destinationPath)
 {
@@ -135,6 +163,18 @@ bool HomeView::createDestinationDirectory(QDir &destinationDir, const fs::path &
     if (!destinationDir.mkpath(destinationDir.path()))
     {
         qDebug() << "Failed to create directory" << destinationDir.path();
+        QMessageBox msgBox;
+        msgBox.setWindowTitle("Error");
+        msgBox.setText("Failed to create directory: " + destinationDir.path());
+        msgBox.setStandardButtons(QMessageBox::Ok);
+        msgBox.setDefaultButton(QMessageBox::Ok);
+
+        int ret = msgBox.exec();
+        if (ret == QMessageBox::Ok)
+        {
+            qDebug() << "User clicked Okay.";
+        }
+
         return false;
     }
 
@@ -169,7 +209,7 @@ void HomeView::addBookToDatabaseAndTableWidget(const Book &addedBookMeta, const 
     QString bookAuthor = QString::fromStdString(addedBookMeta.author.value_or("unknown"));
     QString bookDate = QString::fromStdString(addedBookMeta.date.value_or("unknown"));
 
-    addBookToTableWidget(bookName, bookAuthor, bookDate, QString::fromStdString(destinationPath.string()));
+    addBookToTableWidget(bookId, bookName, bookAuthor, bookDate, QString::fromStdString(destinationPath.string()));
 }
 
 void HomeView::handleButtonClick()
@@ -187,10 +227,8 @@ void HomeView::handleButtonClick()
         std::string author = createUnderscoreName(addedBookMeta.author.value_or("unknown"));
         std::string bookName = createUnderscoreName(addedBookMeta.title.value_or("unknown"));
 
-        fs::path destinationPath = fs::path(m_folderPath) /
-                                   fs::path(author) /
-                                   fs::path(bookName) /
-                                   fs::path("sample.epub");
+        fs::path destinationPath =
+            fs::path(m_folderPath) / fs::path(author) / fs::path(bookName) / fs::path("sample.epub");
 
         addedBookMeta.bookPath = destinationPath.string();
 
@@ -209,6 +247,40 @@ void HomeView::handleButtonClick()
     }
 }
 
+void HomeView::handleDeleteBookClick()
+{
+    int selectedRow = tableWidget->currentRow();
+    if (selectedRow >= 0)
+    {
+        QPair<int, QString> retrievedData =
+            tableWidget->item(selectedRow, 0)->data(Qt::UserRole).value<QPair<int, QString>>();
+        int bookId = retrievedData.first;
+
+        // Remove the book file and directory from the filesystem
+        std::string bookPath = database.getBookById(bookId).bookPath;
+        std::filesystem::path bookFilePath(bookPath);
+        std::filesystem::path bookDirPath = bookFilePath.parent_path();
+
+        database.removeBook(bookId);
+        tableWidget->removeRow(selectedRow);
+
+        if (std::filesystem::exists(bookFilePath))
+        {
+            std::filesystem::remove(bookFilePath);
+        }
+
+        if (std::filesystem::exists(bookDirPath))
+        {
+            std::filesystem::remove_all(bookDirPath);
+        }
+
+        metadataLabel->setText(""); // Clear the metadata label
+        coverLabel->clear(); // Clear the cover label
+    }
+}
+
+
+
 void HomeView::setupTableWidget()
 {
     tableWidget = new QTableWidget;
@@ -225,25 +297,52 @@ void HomeView::setupTableWidget()
     {
         for (const auto &pair : *bookMap)
         {
+            int bookId = pair.first;
             QString bookName = QString::fromStdString(pair.second.title.value_or("unknown"));
             QString bookAuthor = QString::fromStdString(pair.second.author.value_or("unknown"));
             QString bookDate = QString::fromStdString(pair.second.date.value_or("unknown"));
             QString bookPath = QString::fromStdString(pair.second.bookPath);
-            addBookToTableWidget(bookName, bookAuthor, bookDate,
+            addBookToTableWidget(bookId, bookName, bookAuthor, bookDate,
                                  bookPath); // Add the author name and date to the table widget
         }
         delete bookMap;
     }
 
     QObject::connect(tableWidget, &QTableWidget::itemClicked, [=](QTableWidgetItem *item) {
+        QPair<int, QString> retrievedData = item->data(Qt::UserRole).value<QPair<int, QString>>();
+        int retrievedBookId = retrievedData.first;
+        QString retrievedBookPath = retrievedData.second;
+
         QString bookPath = item->data(Qt::UserRole).toString(); // Retrieve the bookPath from the item
-        updateMetadataAndCoverLabels(bookPath);
+        updateMetadataAndCoverLabels(retrievedBookPath);
     });
+    
 
     QObject::connect(tableWidget, &QTableWidget::itemDoubleClicked, [=](QTableWidgetItem *item) {
+        QPair<int, QString> retrievedData = item->data(Qt::UserRole).value<QPair<int, QString>>();
+        int retrievedBookId = retrievedData.first;
+        QString retrievedBookPath = retrievedData.second;
+
         QString bookPath = item->data(Qt::UserRole).toString(); // Retrieve the bookPath from the item
-        emit itemClicked(bookPath);
+        emit itemClicked(retrievedBookPath);
     });
+
+    QObject::connect(tableWidget, &QTableWidget::currentItemChanged, this, &HomeView::updateSelectedBookLabels);
+}
+
+void HomeView::updateSelectedBookLabels(QTableWidgetItem *current, QTableWidgetItem *previous)
+{
+    Q_UNUSED(previous);
+    if (current == nullptr)
+    {
+        metadataLabel->clear();
+        coverLabel->clear();
+        return;
+    }
+    QPair<int, QString> retrievedData = current->data(Qt::UserRole).value<QPair<int, QString>>();
+    QString retrievedBookPath = retrievedData.second;
+
+    updateMetadataAndCoverLabels(retrievedBookPath);
 }
 
 void HomeView::updateMetadataLabel(const Book &book)
@@ -290,11 +389,10 @@ void HomeView::updateCoverLabel(const fs::path &bookPath)
     {
         qDebug() << "Error loading cover image.";
         // Set default image to cover label
-        coverPixmap = QPixmap(":/images/broken_cover.png");
+        coverPixmap = QPixmap("");
     }
     coverLabel->setPixmap(coverPixmap.scaled(coverLabel->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation));
 }
-
 
 void HomeView::updateMetadataAndCoverLabels(const QString &bookPath)
 {
