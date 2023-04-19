@@ -4,11 +4,11 @@
 std::string createUnderscoreName(const std::string &input)
 {
     std::string output = "";
-    for (char c : input)
+    for (const char symbol : input)
     {
-        if (std::isalnum(c))
+        if (std::isalnum(symbol))
         {                              // only keep letters and digits
-            output += std::tolower(c); // convert to lowercase
+            output += static_cast<char>(std::tolower(symbol)); // convert to lowercase
         }
         else if (output.empty() || output.back() != '_')
         {

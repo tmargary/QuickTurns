@@ -13,17 +13,16 @@
 #include <thread>
 
 void launchServer(int port, const std::string& path) {
-    std::string serverPath = "./UserInterface/Server.py";
-    std::string command = "python " + serverPath + " " + std::to_string(port) + " " + path;
+    const std::string serverPath = "./UserInterface/Server.py";
+    const std::string command = "python " + serverPath + " " + std::to_string(port) + " " + path;
     std::system(command.c_str());
 }
 
-ReaderView::ReaderView(QWidget *parent) : QWidget(parent) {
+ReaderView::ReaderView(QWidget *parent) : QWidget(parent), webView(new QWebEngineView(this)) {
 
     // Create the middle part of the window
     QWebEngineProfile *profile = new QWebEngineProfile(this);
     QWebEnginePage *page = new QWebEnginePage(profile, this);
-    webView = new QWebEngineView(this);
     webView->setPage(page);
     webView->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
@@ -35,21 +34,21 @@ ReaderView::ReaderView(QWidget *parent) : QWidget(parent) {
     setLayout(mainLayout);
 }
 
+
 void ReaderView::loadFile(const QString &filePath)
 {
-    QSettings settings;
-    QString serverPath = settings.value("folderPath").toString();
+    const QSettings settings;
+    const QString serverPath = settings.value("folderPath").toString();
     
-    QString epubFilePath = filePath;
-    QFileInfo epubFileInfo(epubFilePath);
-    int serverPort = 8081;
+    const QFileInfo epubFileInfo(filePath);
+    const int serverPort = 8081;
 
-    QString relativePath = filePath.mid(serverPath.length());
+    const QString relativePath = filePath.mid(serverPath.length());
 
     std::thread serverThread(launchServer, serverPort, serverPath.toStdString());
     serverThread.detach();
 
-    QUrl bookPath = QUrl(QString("http://localhost:%1/%2").arg(serverPort).arg(relativePath));
+    const QUrl bookPath = QUrl(QString("http://localhost:%1/%2").arg(serverPort).arg(relativePath));
     webView->setUrl(QUrl(QStringLiteral("qrc:/Styles/continuous-spreads.html?url=%1").arg(bookPath.toString())));
 }
 

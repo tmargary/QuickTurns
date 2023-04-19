@@ -14,6 +14,9 @@
 #include "HomeView.h"
 #include "StringOp.h"
 
+const int DELETE_BUTTON_HEIGHT = 30;
+const int DELETE_BUTTON_WIDTH = 90;
+
 HomeView::HomeView(const QString &folderPath, QWidget *parent)
     : QWidget(parent), m_folderPath(folderPath.toStdString()), database((m_folderPath + "/bookdb.db"))
 {
@@ -27,8 +30,8 @@ HomeView::HomeView(const QString &folderPath, QWidget *parent)
     deleteBookButton->setText(QString::fromUtf8("\xF0\x9F\x97\x91")); // Recycle bin emoji
     deleteBookButton->setToolTip("Delete Book");
     setButtonStyle(deleteBookButton);
-    deleteBookButton->setFixedHeight(30);
-    deleteBookButton->setFixedWidth(90);
+    deleteBookButton->setFixedHeight(DELETE_BUTTON_HEIGHT);
+    deleteBookButton->setFixedWidth(DELETE_BUTTON_WIDTH);
     connect(deleteBookButton, &QPushButton::clicked, this, &HomeView::handleDeleteBookClick);
 
     mainLayout->addWidget(tableWidget, 0, 0);

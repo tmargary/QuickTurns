@@ -1,10 +1,13 @@
 #include "StackedView.h"
 
+const int DEFAULT_WIDTH = 1100;
+const int DEFAULT_HEIGHT = 800;
+
 StackedView::StackedView(const QString &folderPath, QWidget *parent)
     : QWidget(parent), homeView(new HomeView(folderPath)), readerView(new ReaderView),
       stackedWidget(new QStackedWidget), homeButton(new QPushButton)
 {
-    resize(1100, 800);
+    resize(DEFAULT_WIDTH, DEFAULT_HEIGHT);
 
     // Set the button icon and style
     homeButton->setText(QString::fromUtf8("\xF0\x9F\x8F\xA0 Home"));
