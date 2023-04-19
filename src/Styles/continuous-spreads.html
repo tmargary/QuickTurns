@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -12,6 +13,7 @@
 
 
 </head>
+
 <body>
   <select id="toc"></select>
   <div id="viewer" class="spreads"></div>
@@ -31,15 +33,22 @@
       height: 600
     });
 
+    // Get the TOC and log the href of each item
+    book.loaded.navigation.then(function (toc) {
+      toc.forEach(function (item) {
+        console.log(item.href); // This will log the href of each item in the TOC
+      });
+    });
+
     var displayed = rendition.display(currentSectionIndex);
 
 
-    displayed.then(function(renderer){
+    displayed.then(function (renderer) {
       // -- do stuff
     });
 
     // Navigation loaded
-    book.loaded.navigation.then(function(toc){
+    book.loaded.navigation.then(function (toc) {
       // console.log(toc);
     });
 
@@ -47,18 +56,18 @@
 
       var next = document.getElementById("next");
 
-      next.addEventListener("click", function(e){
+      next.addEventListener("click", function (e) {
         book.package.metadata.direction === "rtl" ? rendition.prev() : rendition.next();
         e.preventDefault();
       }, false);
 
       var prev = document.getElementById("prev");
-      prev.addEventListener("click", function(e){
+      prev.addEventListener("click", function (e) {
         book.package.metadata.direction === "rtl" ? rendition.next() : rendition.prev();
         e.preventDefault();
       }, false);
 
-      var keyListener = function(e){
+      var keyListener = function (e) {
 
         // Left Key
         if ((e.keyCode || e.which) == 37) {
@@ -77,11 +86,11 @@
 
     });
 
-    rendition.on("selected", function(range) {
+    rendition.on("selected", function (range) {
       console.log("selected", range);
     });
 
-    rendition.on("layout", function(layout) {
+    rendition.on("layout", function (layout) {
       let viewer = document.getElementById("viewer");
 
       if (layout.spread) {
@@ -91,11 +100,11 @@
       }
     });
 
-    rendition.on("relocated", function(location){
+    rendition.on("relocated", function (location) {
       console.log(location);
 
-      var next = book.package.metadata.direction === "rtl" ?  document.getElementById("prev") : document.getElementById("next");
-      var prev = book.package.metadata.direction === "rtl" ?  document.getElementById("next") : document.getElementById("prev");
+      var next = book.package.metadata.direction === "rtl" ? document.getElementById("prev") : document.getElementById("next");
+      var prev = book.package.metadata.direction === "rtl" ? document.getElementById("next") : document.getElementById("prev");
 
       if (location.atEnd) {
         next.style.visibility = "hidden";
@@ -111,30 +120,31 @@
 
     });
 
-    book.loaded.navigation.then(function(toc){
-			var $select = document.getElementById("toc"),
-					docfrag = document.createDocumentFragment();
+    book.loaded.navigation.then(function (toc) {
+      var $select = document.getElementById("toc"),
+        docfrag = document.createDocumentFragment();
 
-			toc.forEach(function(chapter) {
-				var option = document.createElement("option");
-				option.textContent = chapter.label;
-				option.ref = chapter.href;
+      toc.forEach(function (chapter) {
+        var option = document.createElement("option");
+        option.textContent = chapter.label;
+        option.ref = chapter.href;
 
-				docfrag.appendChild(option);
-			});
+        docfrag.appendChild(option);
+      });
 
-			$select.appendChild(docfrag);
+      $select.appendChild(docfrag);
 
-			$select.onchange = function(){
-					var index = $select.selectedIndex,
-							url = $select.options[index].ref;
-					rendition.display(url);
-					return false;
-			};
+      $select.onchange = function () {
+        var index = $select.selectedIndex,
+          url = $select.options[index].ref;
+        rendition.display(url);
+        return false;
+      };
 
-		});
+    });
 
   </script>
 
 </body>
+
 </html>

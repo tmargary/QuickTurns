@@ -9,7 +9,7 @@ int main(int argc, char *argv[]) {
     QApplication app(argc, argv);
 
     // Set up QSettings for your application
-    QCoreApplication::setOrganizationName("QuickTurns");
+    QCoreApplication::setOrganizationName("Align");
     QCoreApplication::setApplicationName("QuickTurns");
     QSettings::setDefaultFormat(QSettings::IniFormat);
     QSettings::setPath(QSettings::IniFormat, QSettings::UserScope, app.applicationDirPath());

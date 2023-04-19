@@ -3,6 +3,7 @@
 #include <QHeaderView>
 #include <QMessageBox>
 #include <QTableWidgetItem>
+#include <string>
 
 #include "ArchiveExtractor.h"
 #include "BookMetadata.h"
@@ -150,10 +151,12 @@ void HomeView::copyBookAndCover(const QString &filePath, const fs::path &destina
     for (const auto &ext : coverExtensions)
     {
         cover = "cover" + ext;
+        qDebug() << std::string("Attempting to find " + cover).c_str();
         fs::path destinationCoverPath = destinationPath.parent_path() / fs::path(cover);
         bool success = extractor->extractSpecificEntry(cover, destinationCoverPath);
         if (success)
         {
+            qDebug() << "Cover found!";
             break;
         }
     }
@@ -181,8 +184,12 @@ void HomeView::handleButtonClick()
             return;
         }
 
+        std::string author = createUnderscoreName(addedBookMeta.author.value_or("unknown"));
+        std::string bookName = createUnderscoreName(addedBookMeta.title.value_or("unknown"));
+
         fs::path destinationPath = fs::path(m_folderPath) /
-                                   fs::path(createUnderscoreName(addedBookMeta.author.value_or("unknown"))) /
+                                   fs::path(author) /
+                                   fs::path(bookName) /
                                    fs::path("sample.epub");
 
         addedBookMeta.bookPath = destinationPath.string();
@@ -282,10 +289,12 @@ void HomeView::updateCoverLabel(const fs::path &bookPath)
     if (coverPixmap.isNull())
     {
         qDebug() << "Error loading cover image.";
-        return;
+        // Set default image to cover label
+        coverPixmap = QPixmap(":/images/broken_cover.png");
     }
     coverLabel->setPixmap(coverPixmap.scaled(coverLabel->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation));
 }
+
 
 void HomeView::updateMetadataAndCoverLabels(const QString &bookPath)
 {

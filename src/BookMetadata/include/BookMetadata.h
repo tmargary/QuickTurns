@@ -9,6 +9,7 @@ public:
     struct Builder;
 
 public:
+    int id{};
     std::string bookPath;
     int lastPage{};
     std::optional<std::string> title;
@@ -34,6 +35,7 @@ struct Book::Builder
 {
     Book b;
 
+    Builder& setId(const int id) { b.id = id; return *this; }
     Builder& setBookPath(const std::string& path) { b.bookPath = path; return *this; }
     Builder& setTitle(const std::optional<std::string>& title) { b.title = title; return *this; }
     Builder& setAuthor(const std::optional<std::string>& author) { b.author = author; return *this; }

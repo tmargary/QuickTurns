@@ -52,18 +52,8 @@ std::string EpubExtractor::readSpecificEntry(const std::string &entryName)
     for (const auto &entry : entries)
     {
         std::string currentEntryName = entry.getName();
-        std::size_t found = currentEntryName.rfind('/');
-
-        if (found != std::string::npos)
-        {
-            std::string lastPathComponent = currentEntryName.substr(found + 1);
-
-            if (entryName == lastPathComponent)
-            {
-                return entry.readAsText();
-            }
-        }
-        else if (entryName == currentEntryName)
+        if (entryName.size() <= currentEntryName.size() && 
+            currentEntryName.rfind(entryName) == (currentEntryName.size() - entryName.size()))
         {
             return entry.readAsText();
         }

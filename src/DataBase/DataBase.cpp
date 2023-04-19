@@ -53,6 +53,7 @@ void BookDB::executeInsertQuery(int randomId, Book curBook)
 
     // Set the fields of the book using the builder's setter methods
     builder.setBookPath(curBook.bookPath)
+        .setId(randomId)
         .setTitle(curBook.title)
         .setAuthor(curBook.author)
         .setAuthorFileAs(curBook.author_file_as)
@@ -72,7 +73,7 @@ void BookDB::executeInsertQuery(int randomId, Book curBook)
     bookDBTable = "INSERT INTO BOOKS (ID, BOOKPATH, TITLE, AUTHOR, AUTHOR_FILE_AS, CONTRIBUTOR, PUBLISHER, UUID, DATE, "
                   "RIGHTS, LANGUAGE, ISBN, LASTPAGE) "
                   "VALUES (" +
-                  std::to_string(randomId) + ", '" + book.bookPath + "', '" + book.title.value_or("") + "', '" +
+                  std::to_string(book.id) + ", '" + book.bookPath + "', '" + book.title.value_or("") + "', '" +
                   book.author.value_or("") + "', '" + book.author_file_as.value_or("") + "', '" +
                   book.contributor.value_or("") + "', '" + book.publisher.value_or("") + "', '" +
                   book.uuid.value_or("") + "', '" + book.date.value_or("") + "', '" + book.rights.value_or("") +
@@ -148,6 +149,7 @@ std::map<int, Book> *BookDB::getBooksList()
         int lastPage = static_cast<int>(sqlite3_column_double(stmt, 5));
 
         Book tmp = Book::create()
+                       .setId(id)
                        .setBookPath(bookPath)
                        .setTitle(bookName)
                        .setAuthor(authorName)
@@ -175,8 +177,7 @@ bool BookDB::bookExists(const Book &bookToCheck)
     for (const auto &[id, existingBook] : *existingBooks)
     {
         // Modify the condition based on your metadata comparison criteria
-        if (bookToCheck.title == existingBook.title &&
-            bookToCheck.author == existingBook.author)
+        if (bookToCheck.title == existingBook.title && bookToCheck.author == existingBook.author)
         {
             return true;
         }
@@ -302,7 +303,6 @@ Book BookDB::getBookByPath(const std::string &bookPath)
     sqlite3_finalize(stmt);
     return builder.build();
 }
-
 
 BookDB::~BookDB()
 {
