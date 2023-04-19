@@ -2,6 +2,7 @@
 
 const int DEFAULT_WIDTH = 1100;
 const int DEFAULT_HEIGHT = 800;
+const int DEFAULT_HOMEBUTTON_HEIGHT = 30;
 
 StackedView::StackedView(const QString &folderPath, QWidget *parent)
     : QWidget(parent), homeView(new HomeView(folderPath)), readerView(new ReaderView),
@@ -14,7 +15,8 @@ StackedView::StackedView(const QString &folderPath, QWidget *parent)
     homeButton->setStyleSheet("QPushButton { background-color: #f7f7f7; border-radius: 8px; color: black; }"
                               "QPushButton:hover { background-color: #e3e3e3; }"
                               "QPushButton:pressed { background-color: #d1d1d1; }");
-    homeButton->setFixedHeight(30);
+    
+    homeButton->setFixedHeight(DEFAULT_HOMEBUTTON_HEIGHT);
     stackedWidget->addWidget(homeView);
     stackedWidget->addWidget(readerView);
 
