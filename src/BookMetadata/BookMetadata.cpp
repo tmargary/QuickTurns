@@ -15,7 +15,7 @@ Book::Builder Book::create()
 
 std::string parseDate(const std::string &dateStr)
 {
-    int year, month, day;
+    int year{}, month{}, day{};
     std::istringstream dateStream(dateStr);
     std::string temp;
 
@@ -37,30 +37,30 @@ std::vector<std::pair<const char *, std::function<void(const tinyxml2::XMLElemen
     Book::Builder &builder)
 {
     return {
-        {"dc:title", [&builder](const tinyxml2::XMLElement *e) { builder.setTitle(e->GetText() ? e->GetText() : ""); }},
+        {"dc:title", [&builder](const tinyxml2::XMLElement *elm) { builder.setTitle(elm->GetText() ? elm->GetText() : ""); }},
         {"dc:creator",
-         [&builder](const tinyxml2::XMLElement *e) {
-             builder.setAuthor(e->GetText() ? e->GetText() : "")
-                 .setAuthorFileAs(e->Attribute("opf:file-as") ? e->Attribute("opf:file-as") : "");
+         [&builder](const tinyxml2::XMLElement *elm) {
+             builder.setAuthor(elm->GetText() ? elm->GetText() : "")
+                 .setAuthorFileAs(elm->Attribute("opf:file-as") ? elm->Attribute("opf:file-as") : "");
          }},
         {"dc:contributor",
-         [&builder](const tinyxml2::XMLElement *e) { builder.setContributor(e->GetText() ? e->GetText() : ""); }},
+         [&builder](const tinyxml2::XMLElement *elm) { builder.setContributor(elm->GetText() ? elm->GetText() : ""); }},
         {"dc:publisher",
-         [&builder](const tinyxml2::XMLElement *e) { builder.setPublisher(e->GetText() ? e->GetText() : ""); }},
+         [&builder](const tinyxml2::XMLElement *elm) { builder.setPublisher(elm->GetText() ? elm->GetText() : ""); }},
         {"dc:identifier",
-         [&builder](const tinyxml2::XMLElement *e) { builder.setUuid(e->GetText() ? e->GetText() : ""); }},
+         [&builder](const tinyxml2::XMLElement *elm) { builder.setUuid(elm->GetText() ? elm->GetText() : ""); }},
         {"dc:date",
-         [&builder](const tinyxml2::XMLElement *e) {
-             const std::string dateStr = e->GetText() ? e->GetText() : "";
+         [&builder](const tinyxml2::XMLElement *elm) {
+             const std::string dateStr = elm->GetText() ? elm->GetText() : "";
              std::string parsedDate = parseDate(dateStr);
              builder.setDate(parsedDate);
          }},
         {"dc:rights",
-         [&builder](const tinyxml2::XMLElement *e) { builder.setRights(e->GetText() ? e->GetText() : ""); }},
+         [&builder](const tinyxml2::XMLElement *elm) { builder.setRights(elm->GetText() ? elm->GetText() : ""); }},
         {"dc:language",
-         [&builder](const tinyxml2::XMLElement *e) { builder.setLanguage(e->GetText() ? e->GetText() : ""); }},
+         [&builder](const tinyxml2::XMLElement *elm) { builder.setLanguage(elm->GetText() ? elm->GetText() : ""); }},
         {"dc:identifier[opf:scheme='ISBN']",
-         [&builder](const tinyxml2::XMLElement *e) { builder.setIsbn(e->GetText() ? e->GetText() : ""); }}};
+         [&builder](const tinyxml2::XMLElement *elm) { builder.setIsbn(elm->GetText() ? elm->GetText() : ""); }}};
 }
 
 Book parseMetadata(const std::string &filePath)
@@ -71,7 +71,7 @@ Book parseMetadata(const std::string &filePath)
 
     using namespace tinyxml2;
     XMLDocument doc;
-    XMLError error = doc.Parse(xmlContent.c_str());
+    const XMLError error = doc.Parse(xmlContent.c_str());
 
     if (error != XML_SUCCESS)
     {
@@ -80,9 +80,9 @@ Book parseMetadata(const std::string &filePath)
 
     Book::Builder builder;
 
-    if (xmlContent == "")
+    if (xmlContent.empty())
     {
-        std::filesystem::path path(filePath);
+        const std::filesystem::path path(filePath);
         builder.setTitle(path.filename());
         return builder.build();
     }

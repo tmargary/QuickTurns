@@ -13,10 +13,12 @@ class BookDB
   public:
     BookDB(const std::string &dbFilePath);
     Book getBookById(int bookId);
+    Book getBookByPath(const std::string &bookPath);
     std::map<int, Book> *getBooksList();
     int addBookToDatabase(const Book& curBook);
     bool bookExists(const Book &bookToCheck);
     void changeLastePage(int, int);
+    void removeBook(int bookId);
     ~BookDB();
 
   private:
