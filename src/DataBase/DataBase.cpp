@@ -57,7 +57,7 @@ void BookDB::createTable(const std::string &dbFilePath)
 
 int BookDB::addBookToDatabase(const Book &curBook)
 {
-    int randomId = generateUniqueId();
+    const int randomId = generateUniqueId();
 
     executeInsertQuery(randomId, curBook);
     return randomId;
@@ -126,7 +126,7 @@ bool BookDB::idExists(int bookId)
 {
     bool exists = false;
     const char *query = "SELECT id FROM BOOKS WHERE id = ?";
-    exit = sqlite3_prepare_v2(DB, query, -1, &stmt, NULL);
+    exit = sqlite3_prepare_v2(DB, query, -1, &stmt, nullptr);
 
     if (exit != SQLITE_OK)
     {
@@ -150,7 +150,7 @@ std::map<int, Book> *BookDB::getBooksList()
 {
     std::map<int, Book> *bookList = new std::map<int, Book>();
     bookDBTable = "SELECT * FROM BOOKS";
-    exit = sqlite3_prepare_v2(DB, bookDBTable.c_str(), -1, &stmt, NULL);
+    exit = sqlite3_prepare_v2(DB, bookDBTable.c_str(), -1, &stmt, nullptr);
     if (exit != SQLITE_OK)
     {
         std::cerr << "Error preparing statement: " << sqlite3_errmsg(DB) << std::endl;
@@ -159,15 +159,15 @@ std::map<int, Book> *BookDB::getBooksList()
 
     while ((exit = sqlite3_step(stmt)) == SQLITE_ROW)
     {
-        int id = sqlite3_column_int(stmt, 0);
+        const int bookId = sqlite3_column_int(stmt, 0);
         const char *bookPath = (const char *)sqlite3_column_text(stmt, BOOK_PATH_COL);
         const char *bookName = (const char *)sqlite3_column_text(stmt, BOOK_NAME_COL);
         const char *authorName = (const char *)sqlite3_column_text(stmt, AUTHOR_NAME_COL);
         const char *year = (const char *)sqlite3_column_text(stmt, DATE_COL);
-        int lastPage = static_cast<int>(sqlite3_column_double(stmt, CONTRIBUTOR_COL));
+        const int lastPage = (const int)(sqlite3_column_double(stmt, CONTRIBUTOR_COL));
 
-        Book tmp = Book::create()
-                       .setId(id)
+        const Book tmp = Book::create()
+                       .setId(bookId)
                        .setBookPath(bookPath)
                        .setTitle(bookName)
                        .setAuthor(authorName)
@@ -176,7 +176,7 @@ std::map<int, Book> *BookDB::getBooksList()
                        // Add more setters for the remaining fields
                        .build();
 
-        bookList->insert(std::make_pair(id, tmp));
+        bookList->insert(std::make_pair(bookId, tmp));
     }
     if (exit != SQLITE_DONE)
     {
@@ -207,7 +207,7 @@ void BookDB::changeLastePage(int bookid, int newPage)
 {
     bookDBTable = "UPDATE BOOKS SET LASTPAGE = ? WHERE id = ?";
 
-    exit = sqlite3_prepare_v2(DB, bookDBTable.c_str(), -1, &stmt, NULL);
+    exit = sqlite3_prepare_v2(DB, bookDBTable.c_str(), -1, &stmt, nullptr);
 
     if (exit != SQLITE_OK)
     {
@@ -233,7 +233,7 @@ Book BookDB::getBookById(int bookId)
 {
     Book::Builder builder;
     const char *query = "SELECT * FROM BOOKS WHERE id = ?";
-    exit = sqlite3_prepare_v2(DB, query, -1, &stmt, NULL);
+    exit = sqlite3_prepare_v2(DB, query, -1, &stmt, nullptr);
 
     if (exit != SQLITE_OK)
     {
@@ -250,7 +250,7 @@ Book BookDB::getBookById(int bookId)
         const char *bookName = (const char *)sqlite3_column_text(stmt, BOOK_NAME_COL);
         const char *authorName = (const char *)sqlite3_column_text(stmt, AUTHOR_NAME_COL);
         const char *year = (const char *)sqlite3_column_text(stmt, AUTHOR_FILE_AS_COL);
-        int lastPage = sqlite3_column_double(stmt, CONTRIBUTOR_COL);
+        const int lastPage = (const int)sqlite3_column_double(stmt, CONTRIBUTOR_COL);
 
         builder.setBookPath(bookPath)
             .setBookPath(bookPath)
@@ -272,7 +272,7 @@ Book BookDB::getBookById(int bookId)
 void BookDB::removeBook(int bookId)
 {
     const char *query = "DELETE FROM BOOKS WHERE ID = ?";
-    exit = sqlite3_prepare_v2(DB, query, -1, &stmt, NULL);
+    exit = sqlite3_prepare_v2(DB, query, -1, &stmt, nullptr);
     if (exit != SQLITE_OK)
     {
         std::cerr << "Error preparing statement: " << sqlite3_errmsg(DB) << std::endl;
@@ -295,7 +295,7 @@ Book BookDB::getBookByPath(const std::string &bookPath)
 {
     Book::Builder builder;
     const char *query = "SELECT * FROM BOOKS WHERE BOOKPATH = ?";
-    exit = sqlite3_prepare_v2(DB, query, -1, &stmt, NULL);
+    exit = sqlite3_prepare_v2(DB, query, -1, &stmt, nullptr);
 
     if (exit != SQLITE_OK)
     {
@@ -319,7 +319,7 @@ Book BookDB::getBookByPath(const std::string &bookPath)
         const char *rights = (const char *)sqlite3_column_text(stmt, RIGHTS_COL);
         const char *language = (const char *)sqlite3_column_text(stmt, LANGUAGE_COL);
         const char *isbn = (const char *)sqlite3_column_text(stmt, ISBN_COL);
-        int lastPage = sqlite3_column_int(stmt, LAST_PAGE_COL);
+        const int lastPage = sqlite3_column_int(stmt, LAST_PAGE_COL);
 
         builder.setBookPath(bookPath)
             .setTitle(bookName)
