@@ -6,7 +6,7 @@
 #include "StackedView.h"
 
 int main(int argc, char *argv[]) {
-    QApplication app(argc, argv);
+    const QApplication app(argc, argv);
 
     // Set up QSettings for your application
     QCoreApplication::setOrganizationName("Align");
@@ -16,7 +16,7 @@ int main(int argc, char *argv[]) {
 
     // Check if the folder path is already set
     QSettings settings;
-    QString folderPath = settings.value("folderPath").toString();
+    const QString folderPath = settings.value("folderPath").toString();
 
     // Prompt the user to select a folder if the folder path is not set
     if (folderPath.isEmpty()) {
@@ -28,7 +28,7 @@ int main(int argc, char *argv[]) {
         widget->show();
 
         QObject::connect(button, &QPushButton::clicked, [&]() {
-            QString newFolderPath = QFileDialog::getExistingDirectory(nullptr, "Select a folder to store books and metadata");
+            const QString newFolderPath = QFileDialog::getExistingDirectory(nullptr, "Select a folder to store books and metadata");
             if (!newFolderPath.isEmpty()) {
                 settings.setValue("folderPath", newFolderPath);
                 StackedView *stackedView = new StackedView(newFolderPath); // Pass the folder path to StackedView
