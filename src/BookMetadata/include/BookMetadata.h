@@ -2,6 +2,7 @@
 
 #include <optional>
 #include <tinyxml2.h>
+#include <string>
 
 class Book
 {
