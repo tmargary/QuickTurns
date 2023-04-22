@@ -20,4 +20,4 @@ target_link_libraries(UserInterface PRIVATE
     ArchiveExtractor 
     BookMetadata
     Util
-    )
+)

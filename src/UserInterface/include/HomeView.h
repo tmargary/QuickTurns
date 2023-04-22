@@ -4,7 +4,6 @@
 #include <QPushButton>
 #include <QLabel>
 #include <QTableWidget>
-
 #include "DataBase.h"
 
 namespace fs = std::filesystem;

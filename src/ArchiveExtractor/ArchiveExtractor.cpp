@@ -35,16 +35,6 @@ void EpubExtractor::extract()
     }
 }
 
-std::unique_ptr<ArchiveExtractor> createExtractor(const fs::path &source, const fs::path &destinationDir)
-{
-    const std::string extension = fs::path(source).extension().string();
-    if (extension == ".epub")
-    {
-        return std::make_unique<EpubExtractor>(source, destinationDir);
-    }
-    throw std::runtime_error("Unsupported file format.");
-}
-
 std::string EpubExtractor::readSpecificEntry(const std::string &entryName)
 {
     const std::vector<ZipEntry> entries = readEntries(source);
@@ -72,4 +62,15 @@ bool EpubExtractor::extractSpecificEntry(const std::string &entryName, const fs:
         return true;
     }
     return false;
+}
+
+
+std::unique_ptr<ArchiveExtractor> createExtractor(const fs::path &source, const fs::path &destinationDir)
+{
+    const std::string extension = fs::path(source).extension().string();
+    if (extension == ".epub")
+    {
+        return std::make_unique<EpubExtractor>(source, destinationDir);
+    }
+    throw std::runtime_error("Unsupported file format.");
 }
