@@ -12,3 +12,5 @@ target_link_libraries(RunAllTests ${GTEST_BOTH_LIBRARIES})
 # Add subdirectories for each module's tests
 add_subdirectory(../TestDataBase RunAllTests/TestDataBase)
 add_subdirectory(../TestArchiveExtractor RunAllTests/TestArchiveExtractor)
+add_subdirectory(../TestBookMetadata RunAllTests/TestBookMetadata)
+add_subdirectory(../TestUtil RunAllTests/TestUtil)
