@@ -10,6 +10,8 @@ In addition to the forthcoming text-to-speech engine, QuickTurns also offers oth
 
 QuickTurns is a highly versatile ebook reader that offers exceptional performance and features. Its promise of a special text-to-speech engine in the future makes it an excellent option for people who want to switch between reading and listening to their favorite books.
 
+[Slides](https://docs.google.com/presentation/d/1JWWIJeA5GChfNUFarCOqWLlyUM1J1mbe73Wsd7jwBDk)</br>
+
 ## Setting up QT Environment
 
 Windows/Mac
