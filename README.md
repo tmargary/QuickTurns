@@ -12,6 +12,10 @@ QuickTurns is a highly versatile ebook reader that offers exceptional performanc
 
 [Slides](https://docs.google.com/presentation/d/1JWWIJeA5GChfNUFarCOqWLlyUM1J1mbe73Wsd7jwBDk)</br>
 
+## Demo
+![output](https://user-images.githubusercontent.com/56524296/233860135-2ad6e2bb-a6c3-4772-aec1-46b100751456.gif)
+
+
 ## Setting up QT Environment
 
 Windows/Mac
